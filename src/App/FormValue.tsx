@@ -1,34 +1,19 @@
 import { observable, computed, action } from "mobx";
+import { ConversionFn, FormMap } from "./Value";
 
-export type ConversionFn<T, K> = (value: T) => K | Error;
-
-const mergeConversion = <A,B,C>(conv1: ConversionFn<A,B>, conv2: ConversionFn<B,C>): ConversionFn<A, C> => {
-    return (data: A): C | Error => {
-
-        const result1 = conv1(data);
-        if (result1 instanceof Error) {
-            return result1;
-        }
-
-        return conv2(result1);
-    };
-};
-
-export class FormValue<K, V> {
+export class FormValue<K> {
     private readonly initValue: K;
     @observable private value: K;
     @observable private isVisitedInner: boolean;
-    private readonly conversion: ConversionFn<K, V>;
 
-    constructor(value: K, isVisited: boolean, conversion: ConversionFn<K, V>) {
+    constructor(value: K) {
         this.initValue = value;
         this.value = value;
-        this.isVisitedInner = isVisited;
-        this.conversion = conversion;
+        this.isVisitedInner = false;
     }
 
-    static init<T>(value: T): FormValue<T, T> {
-        return new FormValue(value, false, (value) => value);
+    static init<T>(value: T): FormValue<T> {
+        return new FormValue(value);
     }
 
     @action setValue(value: K) {
@@ -39,26 +24,16 @@ export class FormValue<K, V> {
         this.isVisitedInner = true;
     }
 
-    map<C>(conv2: ConversionFn<V, C>): FormValue<K, C> {
-        return new FormValue(
-            this.value,
-            this.isVisitedInner,
-            mergeConversion(this.conversion, conv2)
-        );
+    map<C>(conv: ConversionFn<K, C>): FormMap<C> {
+        return new FormMap(this).map(conv);
     }
 
     @computed get valueView(): K {
         return this.value;
     }
 
-    @computed get valueModel(): V | Error {
-        const result = this.conversion(this.value);
-
-        if (result instanceof Error) {
-            return result;
-        }
-
-        return result;
+    @computed get valueModel(): K | Error {
+        return this.value;
     }
 
     @computed get modifiedStatus(): boolean {
@@ -66,15 +41,10 @@ export class FormValue<K, V> {
     }
 
     @computed get errorMessage(): string | null {
-        if (this.isVisitedInner) {
-            const result = this.conversion(this.value);
-            return (result instanceof Error) ? result.message : null;
-        }
-
         return null;
     }
 
-    isVisited(): boolean {
+    get isVisited(): boolean {
         return this.isVisitedInner;
     }
 }

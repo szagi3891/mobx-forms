@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FormGroup } from './FormGroup';
 import { FormValue } from './FormValue';
 import { observer } from 'mobx-react';
+import { FormMap } from './Value';
 
 const convertToNumber = (value: string): number | Error => {
     const valueNumber = parseFloat(value);
@@ -30,39 +31,45 @@ const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Erro
     return delta > maxDelta ? new Error('Zbyt dua odległośc pomiędzy oboma liczbami') : value;
 }
 
-const field1 = FormValue
+const field1: FormMap<number> = FormValue
     .init('')
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateDay);
 
-const field2 = FormValue
+const field2: FormMap<number> = FormValue
     .init('')
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateMonth);
 
-const field3 = FormValue
+const field3: FormMap<number> = FormValue
     .init('')
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateYear);
 
-const date1 = FormGroup.init({
+interface DateType {
+    day: number,
+    month: number,
+    year: number
+}
+
+const date1: FormGroup<DateType> = FormGroup.init({
     day: field1,
     month: field2,
     year: field3
 });
 
-const field4 = FormValue.init('')
+const field4: FormMap<number> = FormValue.init('')
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-const field5 = FormValue.init('')
+const field5: FormMap<number> = FormValue.init('')
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-const range = FormGroup.
+const range: FormMap<string> = FormGroup.
     init({
         from: field4,
         to: field5
@@ -71,7 +78,12 @@ const range = FormGroup.
     .map((value): string | Error => `${value.from}-${value.to}`)
 ;
 
-const formState = FormGroup.init({
+interface FormType {
+    data: DateType,
+    range: string,
+}
+
+const formState: FormGroup<FormType> = FormGroup.init({
     data: date1,
     range: range
 })

@@ -1,41 +1,29 @@
 import { action, computed } from "mobx";
 import { FormValue } from "./FormValue";
+import { FormMap } from "./Value";
 
 export type ConversionFn<T, K> = (value: T) => K | Error;
 
-const mergeConversion = <A,B,C>(conv1: ConversionFn<A,B>, conv2: ConversionFn<B,C>): ConversionFn<A, C> => {
-    return (data: A): C | Error => {
-
-        const result1 = conv1(data);
-        if (result1 instanceof Error) {
-            return result1;
-        }
-
-        return conv2(result1);
-    };
-};
+type Value<T> = FormGroup<T> | FormMap<T> | FormValue<T>;
 
 type InType<T> = {
-    readonly [P in keyof T]: FormValue<any, T[P]> | FormGroup<any, T[P]>;
+    readonly [P in keyof T]: Value<T[P]>;
 };
 
-
-export class FormGroup<T, M> {
+export class FormGroup<T> {
     private fields: InType<T>;
-    private readonly conversion: ConversionFn<T, M>;
 
-    constructor(fields: InType<T>, conversion: ConversionFn<T, M>) {
+    constructor(fields: InType<T>) {
         this.fields = fields;
-        this.conversion = conversion;
     }
 
-    static init<T>(value: InType<T>): FormGroup<T, T> {
-        return new FormGroup(value, (value: T): T => value);
+    static init<T>(value: InType<T>): FormGroup<T> {
+        return new FormGroup(value);
     }
 
-    iterate(): Array<[string, FormValue<unknown, unknown> | FormGroup<unknown, unknown>]> {
-        const out: Array<[string, FormValue<unknown, unknown> | FormGroup<unknown, unknown>]> = [];
-    
+    iterate(): Array<[string, Value<unknown>]> {
+        const out: Array<[string, Value<unknown>]> = [];
+
         for (const [key, item] of Object.entries(this.fields)) {
             if (item instanceof FormValue || item instanceof FormGroup) {
                 out.push([key, item]);
@@ -46,7 +34,7 @@ export class FormGroup<T, M> {
         return out;
     }
 
-    iterateValues(): Array<FormValue<unknown, unknown> | FormGroup<unknown, unknown>> {
+    iterateValues(): Array<Value<unknown>> {
         return this.iterate().map(([_key, item]) => item);
     }
 
@@ -66,14 +54,11 @@ export class FormGroup<T, M> {
         return false;
     }
 
-    map<C>(conv2: ConversionFn<M, C>): FormGroup<T, C> {
-        return new FormGroup(
-            this.fields,
-            mergeConversion(this.conversion, conv2)
-        );
+    map<C>(conv: ConversionFn<T, C>): FormMap<C> {
+        return new FormMap(this).map(conv);
     }
 
-    @computed private get innerModel(): T | Error {
+    @computed get valueModel(): T | Error {
         const modelOut = {};
 
         for (const [key, item] of this.iterate()) {
@@ -101,29 +86,8 @@ export class FormGroup<T, M> {
         return true;
     }
 
-    @computed get valueModel(): M | Error {
-        const innerModel = this.innerModel;
-
-        if (innerModel instanceof Error) {
-            return innerModel;
-        }
-
-        return this.conversion(innerModel);
-    }
-
     @computed get errorMessage(): string | null {
-        if (this.isVisited) {
-            const innerModel = this.innerModel;
-
                                                                 //interesują nas błędy tylko grupy, nie poszczególnych pól formularza
-            if (innerModel instanceof Error) {
-                return null;
-            }
-
-            const model = this.conversion(innerModel);
-            return (model instanceof Error) ? model.message : null;
-        }
-
         return null;
     }
 }
