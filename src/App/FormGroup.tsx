@@ -33,24 +33,33 @@ export class FormGroup<T, M> {
         return new FormGroup(value, (value: T): T => value);
     }
 
-    @action setAsVisited() {
-        for (const item of Object.values(this.fields)) {
+    iterate(): Array<[string, FormValue<unknown, unknown> | FormGroup<unknown, unknown>]> {
+        const out: Array<[string, FormValue<unknown, unknown> | FormGroup<unknown, unknown>]> = [];
+    
+        for (const [key, item] of Object.entries(this.fields)) {
             if (item instanceof FormValue || item instanceof FormGroup) {
-                item.setAsVisited();
+                out.push([key, item]);
             } else {
                 throw Error('Nieprawidłowe odgałęzenie');
             }
         }
+        return out;
+    }
+
+    iterateValues(): Array<FormValue<unknown, unknown> | FormGroup<unknown, unknown>> {
+        return this.iterate().map(([_key, item]) => item);
+    }
+
+    @action setAsVisited() {
+        for (const item of this.iterateValues()) {
+            item.setAsVisited();
+        }
     }
 
     @computed get modifiedStatus(): boolean {
-        for (const item of Object.values(this.fields)) {
-            if (item instanceof FormValue || item instanceof FormGroup) {
-                if (item.modifiedStatus) {
-                    return true;
-                }
-            } else {
-                throw Error('Nieprawidłowe odgałęzenie');
+        for (const item of this.iterateValues()) {
+            if (item.modifiedStatus) {
+                return true;
             }
         }
 
@@ -67,18 +76,14 @@ export class FormGroup<T, M> {
     @computed private get innerModel(): T | Error {
         const modelOut = {};
 
-        for (const [key, item] of Object.entries(this.fields)) {
-            if (item instanceof FormValue || item instanceof FormGroup) {
-                const value = item.valueModel;
-                if (value instanceof Error) {
-                    return value;
-                }
-
-                //@ts-ignore
-                modelOut[key] = value;
-            } else {
-                throw Error('Nieprawidłowe odgałęzenie');
+        for (const [key, item] of this.iterate()) {
+            const value = item.valueModel;
+            if (value instanceof Error) {
+                return value;
             }
+
+            //@ts-ignore
+            modelOut[key] = value;
         }
 
         //@ts-ignore
@@ -87,13 +92,9 @@ export class FormGroup<T, M> {
 
     @computed get isVisited(): boolean {
                                                                 //wszystkie musza być odwiedzone żeby ta grupa była traktowana jako odwiedzona
-        for (const item of Object.values(this.fields)) {
-            if (item instanceof FormValue || item instanceof FormGroup) {
-                if (item.isVisited === false) {
-                    return false;
-                }
-            } else {
-                throw Error('Nieprawidłowe odgałęzenie');
+        for (const item of this.iterateValues()) {
+            if (item.isVisited === false) {
+                return false;
             }
         }
 
