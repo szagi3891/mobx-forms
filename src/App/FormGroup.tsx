@@ -104,7 +104,6 @@ export class FormGroup<T, M> {
     @computed get valueModel(): M | Error {
         const innerModel = this.innerModel;
 
-                                                            //interesują nas błędy tylko grupy, nie poszczególnych pól formularza
         if (innerModel instanceof Error) {
             return innerModel;
         }
@@ -114,7 +113,14 @@ export class FormGroup<T, M> {
 
     @computed get errorMessage(): string | null {
         if (this.isVisited) {
-            const model = this.valueModel;
+            const innerModel = this.innerModel;
+
+                                                                //interesują nas błędy tylko grupy, nie poszczególnych pól formularza
+            if (innerModel instanceof Error) {
+                return null;
+            }
+
+            const model = this.conversion(innerModel);
             return (model instanceof Error) ? model.message : null;
         }
 
