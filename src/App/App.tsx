@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { FormGroup } from './FormGroup';
-import { FormValue } from './FormValue';
+import { FormInputState, FormGroupModel, input, group } from '../Form';
 import { observer } from 'mobx-react';
-import { FormMap } from './Value';
+import { InputView } from './InputView';
+import { GroupView } from './GroupView';
 
 const convertToNumber = (value: string): number | Error => {
     const valueNumber = parseFloat(value);
@@ -13,7 +13,7 @@ const validateNotEmpty = (value: string): string | Error =>
     value === '' ? new Error('Wpisz coś') : value
 ;
 
-const validateRange = (from: number, to: number, message: string) => (value: number): number | Error =>
+export const validateRange = (from: number, to: number, message: string) => (value: number): number | Error =>
     (from <= value && value <= to) ? value : new Error(message)
 ;
 
@@ -31,20 +31,20 @@ const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Erro
     return delta > maxDelta ? new Error('Zbyt dua odległośc pomiędzy oboma liczbami') : value;
 }
 
-const field1: FormMap<number> = FormValue
-    .init('')
+const input1: FormInputState<string> = input('');
+const field1: FormGroupModel<number> = input1
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateDay);
 
-const field2: FormMap<number> = FormValue
-    .init('')
+const input2 = input('');
+const field2: FormGroupModel<number> = input2
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateMonth);
 
-const field3: FormMap<number> = FormValue
-    .init('')
+const input3 = input('');
+const field3: FormGroupModel<number> = input3
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateYear);
@@ -55,22 +55,23 @@ interface DateType {
     year: number
 }
 
-const date1: FormGroup<DateType> = FormGroup.init({
+const date1: FormGroupModel<DateType> = group({
     day: field1,
     month: field2,
     year: field3
 });
 
-const field4: FormMap<number> = FormValue.init('')
+const input4 = input('');
+const field4: FormGroupModel<number> = input4
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-const field5: FormMap<number> = FormValue.init('')
+const input5 = input('');
+const field5: FormGroupModel<number> = input5
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-const range: FormMap<string> = FormGroup.
-    init({
+const range: FormGroupModel<string> = group({
         from: field4,
         to: field5
     })
@@ -83,17 +84,43 @@ interface FormType {
     range: string,
 }
 
-const formState: FormGroup<FormType> = FormGroup.init({
+const formState: FormGroupModel<FormType> = group({
     data: date1,
     range: range
 })
+
+console.info(formState);
 
 @observer
 export class App extends React.Component {
     render() {
         return (
             <div>
-                App ...
+                <GroupView label="Zbiorczy model" group={formState}>
+                    <GroupView label="Cała data" group={date1}>
+                        <GroupView label="Dzień" group={field1}>
+                            <InputView input={input1} />
+                        </GroupView>
+
+                        <GroupView label="Miesiąc" group={field2}>
+                            <InputView input={input2} />
+                        </GroupView>
+
+                        <GroupView label="Rok" group={field3}>
+                            <InputView input={input3} />
+                        </GroupView>
+                    </GroupView>
+
+                    <GroupView label="Zakres (max 10 różnicy)" group={range}>
+                        <GroupView label="Od" group={field4}>
+                            <InputView input={input4} />
+                        </GroupView>
+
+                        <GroupView label="Do" group={field5}>
+                            <InputView input={input5} />
+                        </GroupView>
+                    </GroupView>
+                </GroupView>
             </div>
         );
     }

@@ -10,15 +10,15 @@ export interface Value<T> {
     isVisited: boolean,
 }
 
-export class FormMap<V> {
+export class FormGroupModel<V> {
 
-    private inner: Value<V>;
+    protected inner: Value<V>;
 
     constructor(prev: Value<V>) {
         this.inner = prev;
     }
 
-    map<C>(conv: ConversionFn<V, C>): FormMap<C> {
+    map<C>(conv: ConversionFn<V, C>): FormGroupModel<C> {
         const inner = this.inner;
 
         const newFormMap = {
@@ -26,22 +26,36 @@ export class FormMap<V> {
                 inner.setAsVisited();
             },
             get valueModel(): C | Error {
-                const value = inner.valueModel;
-                return value instanceof Error ? value : conv(value);
+                const valueModel = inner.valueModel;
+                return valueModel instanceof Error ? valueModel : conv(valueModel);
             },
             get modifiedStatus(): boolean {
                 return inner.modifiedStatus;
             },
             get errorMessage(): string | null {
+                const errorMessage = inner.errorMessage;
+                if (errorMessage !== null) {
+                    return errorMessage;
+                }
+
                 const valueModel = inner.valueModel;
-                return (valueModel instanceof Error) ? valueModel.message : null;
+                if (valueModel instanceof Error) {
+                    return null;
+                }
+
+                const newValue = conv(valueModel);
+                if (newValue instanceof Error) {
+                    return newValue.message;
+                }
+    
+                return null;
             },
             get isVisited(): boolean {
                 return inner.isVisited;
             }
         };
 
-        return new FormMap(newFormMap);
+        return new FormGroupModel(newFormMap);
     }
 
     @action setAsVisited() {
