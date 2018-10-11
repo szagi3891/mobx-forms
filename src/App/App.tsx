@@ -3,19 +3,7 @@ import { FormInputState, FormGroupModel, input, group } from '../Form';
 import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
-
-const convertToNumber = (value: string): number | Error => {
-    const valueNumber = parseFloat(value);
-    return isNaN(valueNumber) ? new Error('Not number') : valueNumber;
-}
-
-const validateNotEmpty = (value: string): string | Error =>
-    value === '' ? new Error('Wpisz coś') : value
-;
-
-export const validateRange = (from: number, to: number, message: string) => (value: number): number | Error =>
-    (from <= value && value <= to) ? value : new Error(message)
-;
+import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');

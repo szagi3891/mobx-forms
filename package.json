@@ -30,5 +30,9 @@
     "testMatch": [
       "**/__tests__/*.+(ts|tsx|js)"
     ]
+  },
+  "scripts": {
+    "start": "parcel ./src/index.html",
+    "test": "jest --watch"
   }
 }
