@@ -91,6 +91,28 @@ if (!(aa instanceof Error)) {
 console.info(formState);
 */
 
+
+/*
+https://basarat.gitbooks.io/typescript/docs/types/index-signatures.html
+
+type LastSetType = 'aa' | 'bb' | 'cc' | 'dd';
+
+type FromSomeIndex<K extends string> = { [key in K]: string }
+
+const lastSetMap: FromSomeIndex<LastSetType> = {
+   "aa": "Tie Break",
+   "bb": "dasdasda",
+   "cc": "dasdas",
+   "dd": "dasdas"
+};
+
+const aa: LastSetType = 'bb';
+
+const label = lastSetMap[aa];
+*/
+
+
+
 @observer
 export class App extends React.Component {
     render() {
