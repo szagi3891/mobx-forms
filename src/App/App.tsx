@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormInputState, FormGroupModel, input, group } from '../Form';
+import { FormInputState, FormModel, input, group } from '../Form';
 import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
@@ -19,7 +19,7 @@ const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Erro
     return delta > maxDelta ? new Error('Zbyt dua odległośc pomiędzy oboma liczbami') : value;
 }
 
-const input1: FormInputState<string> = input('');
+const input1/*: FormInputState<string>*/ = input('');
 const field1 = input1
     .map(validateNotEmpty)
     .map(convertToNumber)
@@ -32,16 +32,16 @@ const field2 = input2
     .map(validateMonth);
 
 const input3 = input('');
-const field3: FormGroupModel<number> = input3
+const field3/*: FormModel<number>*/ = input3
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateYear);
 
-interface DateType {
+/*interface DateType {
     day: number,
     month: number,
     year: number
-}
+}*/
 
 const date1 = group({
     day: field1,
@@ -50,20 +50,21 @@ const date1 = group({
 });
 
 const input4 = input('');
-const field4: FormGroupModel<number> = input4
+const field4/*: FormModel<number>*/ = input4
     .map(validateNotEmpty)
     .map(convertToNumber);
 
 const input5 = input('');
-const field5: FormGroupModel<number> = input5
+const field5 /*: FormModel<number>*/ = input5
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-interface FormType {
-    from: FormGroupModel<number>,
+/*interface FormType {
+    from: number,
     to: FormGroupModel<number>,
-}
-const range: FormGroupModel<string> = group<FormType>({
+}*/
+
+const range /*: FormGroupModel<string>*/ = group({
         from: field4,
         to: field5
     })
@@ -71,17 +72,24 @@ const range: FormGroupModel<string> = group<FormType>({
     .map((value): string | Error => `${value.from}-${value.to}`)
 ;
 
-interface FormType {
+/*interface FormType {
     data: DateType,
     range: string,
-}
+}*/
 
-const formState: FormGroupModel<FormType> = group({
+const formState/*: FormModel<FormType>*/ = group({
     data: date1,
     range: range
-})
+});
 
+/*
+const aa = formState.valueModel;
+
+if (!(aa instanceof Error)) {
+    aa.range
+}
 console.info(formState);
+*/
 
 @observer
 export class App extends React.Component {

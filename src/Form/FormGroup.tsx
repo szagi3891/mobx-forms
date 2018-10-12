@@ -1,10 +1,10 @@
 import { action, computed } from "mobx";
 import { FormInputState } from "./FormInputState";
-import { FormGroupModel } from "./FormGroupModel";
+import { FormModel } from "./FormModel";
 
 export type ConversionFn<T, K> = (value: T) => K | Error;
 
-type Value<T> = FormInputState<T> | FormGroupModel<T>;
+type Value<T> = FormInputState<T> | FormModel<T>;
 
 /*export type InGroupType<T> = {
     readonly [P in keyof T]: Value<T[P]>;
@@ -13,7 +13,7 @@ type Value<T> = FormInputState<T> | FormGroupModel<T>;
 export type Model<T> = {
     readonly [P in keyof T]:
         T[P] extends FormInputState<infer O1> ? O1 :
-        T[P] extends FormGroupModel<infer O2> ? O2 :
+        T[P] extends FormModel<infer O2> ? O2 :
         T[P];
 }
 
@@ -28,7 +28,7 @@ export class FormGroup<IN> {
         const out: Array<[string, Value<unknown>]> = [];
 
         for (const [key, item] of Object.entries(this.fields)) {
-            if (item instanceof FormInputState || item instanceof FormGroupModel) {
+            if (item instanceof FormInputState || item instanceof FormModel) {
                 out.push([key, item]);
             } else {
                 throw Error('Nieprawidłowe odgałęzenie');
@@ -57,8 +57,8 @@ export class FormGroup<IN> {
         return false;
     }
 
-    map<C>(conv: ConversionFn<Model<IN>, Model<C>>): FormGroupModel<Model<C>> {
-        return new FormGroupModel<Model<IN>>(this).map(conv);
+    map<C>(conv: ConversionFn<Model<IN>, Model<C>>): FormModel<Model<C>> {
+        return new FormModel<Model<IN>>(this).map(conv);
     }
 
     @computed get valueModel(): Model<IN> | Error {

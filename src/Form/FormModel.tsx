@@ -10,7 +10,7 @@ export interface Value<T> {
     isVisited: boolean,
 }
 
-export class FormGroupModel<V> {
+export class FormModel<V> {
 
     protected inner: Value<V>;
 
@@ -18,7 +18,7 @@ export class FormGroupModel<V> {
         this.inner = prev;
     }
 
-    map<C>(conv: ConversionFn<V, C>): FormGroupModel<C> {
+    map<C>(conv: ConversionFn<V, C>): FormModel<C> {
         const inner = this.inner;
 
         const newFormMap = {
@@ -55,7 +55,7 @@ export class FormGroupModel<V> {
             }
         };
 
-        return new FormGroupModel(newFormMap);
+        return new FormModel(newFormMap);
     }
 
     @action setAsVisited() {

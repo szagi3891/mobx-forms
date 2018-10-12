@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { observer } from "mobx-react";
-import { FormGroupModel } from '../Form';
+import { FormModel } from '../Form';
 
 interface GroupViewPropsType {
     label: string,
-    group: FormGroupModel<any>,
+    group: FormModel<any>,
     children: React.ReactNode,
 }
 

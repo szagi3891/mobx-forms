@@ -1,5 +1,5 @@
 import { observable, computed, action } from "mobx";
-import { ConversionFn, FormGroupModel } from "./FormGroupModel";
+import { ConversionFn, FormModel } from "./FormModel";
 
 export class FormInputState<K> {
     private readonly initValue: K;
@@ -20,8 +20,8 @@ export class FormInputState<K> {
         this.isVisitedInner = true;
     }
 
-    map<C>(conv: ConversionFn<K, C>): FormGroupModel<C> {
-        return new FormGroupModel(this).map(conv);
+    map<C>(conv: ConversionFn<K, C>): FormModel<C> {
+        return new FormModel(this).map(conv);
     }
 
     @computed get valueView(): K {
