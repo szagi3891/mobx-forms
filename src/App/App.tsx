@@ -20,13 +20,13 @@ const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Erro
 }
 
 const input1: FormInputState<string> = input('');
-const field1: FormGroupModel<number> = input1
+const field1 = input1
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateDay);
 
 const input2 = input('');
-const field2: FormGroupModel<number> = input2
+const field2 = input2
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateMonth);
@@ -43,7 +43,7 @@ interface DateType {
     year: number
 }
 
-const date1: FormGroupModel<DateType> = group({
+const date1 = group({
     day: field1,
     month: field2,
     year: field3
@@ -59,7 +59,11 @@ const field5: FormGroupModel<number> = input5
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-const range: FormGroupModel<string> = group({
+interface FormType {
+    from: FormGroupModel<number>,
+    to: FormGroupModel<number>,
+}
+const range: FormGroupModel<string> = group<FormType>({
         from: field4,
         to: field5
     })

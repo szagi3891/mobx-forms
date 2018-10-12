@@ -6,14 +6,21 @@ export type ConversionFn<T, K> = (value: T) => K | Error;
 
 type Value<T> = FormInputState<T> | FormGroupModel<T>;
 
-export type InGroupType<T> = {
+/*export type InGroupType<T> = {
     readonly [P in keyof T]: Value<T[P]>;
-};
+};*/
 
-export class FormGroup<T> {
-    private fields: InGroupType<T>;
+export type Model<T> = {
+    readonly [P in keyof T]:
+        T[P] extends FormInputState<infer O1> ? O1 :
+        T[P] extends FormGroupModel<infer O2> ? O2 :
+        T[P];
+}
 
-    constructor(fields: InGroupType<T>) {
+export class FormGroup<IN> {
+    private fields: IN;
+
+    constructor(fields: IN) {
         this.fields = fields;
     }
 
@@ -50,11 +57,11 @@ export class FormGroup<T> {
         return false;
     }
 
-    map<C>(conv: ConversionFn<T, C>): FormGroupModel<C> {
-        return new FormGroupModel(this).map(conv);
+    map<C>(conv: ConversionFn<Model<IN>, Model<C>>): FormGroupModel<Model<C>> {
+        return new FormGroupModel<Model<IN>>(this).map(conv);
     }
 
-    @computed get valueModel(): T | Error {
+    @computed get valueModel(): Model<IN> | Error {
         const modelOut = {};
 
         for (const [key, item] of this.iterate()) {
