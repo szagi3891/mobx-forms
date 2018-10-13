@@ -19,7 +19,7 @@ const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Erro
     return delta > maxDelta ? new Error('Zbyt dua odległośc pomiędzy oboma liczbami') : value;
 }
 
-const input1/*: FormInputState<string>*/ = input('');
+const input1 = input('');
 const field1 = input1
     .map(validateNotEmpty)
     .map(convertToNumber)
@@ -32,16 +32,10 @@ const field2 = input2
     .map(validateMonth);
 
 const input3 = input('');
-const field3/*: FormModel<number>*/ = input3
+const field3 = input3
     .map(validateNotEmpty)
     .map(convertToNumber)
     .map(validateYear);
-
-/*interface DateType {
-    day: number,
-    month: number,
-    year: number
-}*/
 
 const date1 = group({
     day: field1,
@@ -50,21 +44,16 @@ const date1 = group({
 });
 
 const input4 = input('');
-const field4/*: FormModel<number>*/ = input4
+const field4 = input4
     .map(validateNotEmpty)
     .map(convertToNumber);
 
 const input5 = input('');
-const field5 /*: FormModel<number>*/ = input5
+const field5 = input5
     .map(validateNotEmpty)
     .map(convertToNumber);
 
-/*interface FormType {
-    from: number,
-    to: FormGroupModel<number>,
-}*/
-
-const range /*: FormGroupModel<string>*/ = group({
+const range = group({
         from: field4,
         to: field5
     })
@@ -72,45 +61,10 @@ const range /*: FormGroupModel<string>*/ = group({
     .map((value): string | Error => `${value.from}-${value.to}`)
 ;
 
-/*interface FormType {
-    data: DateType,
-    range: string,
-}*/
-
-const formState/*: FormModel<FormType>*/ = group({
+const formState = group({
     data: date1,
     range: range
 });
-
-/*
-const aa = formState.valueModel;
-
-if (!(aa instanceof Error)) {
-    aa.range
-}
-console.info(formState);
-*/
-
-
-/*
-https://basarat.gitbooks.io/typescript/docs/types/index-signatures.html
-
-type LastSetType = 'aa' | 'bb' | 'cc' | 'dd';
-
-type FromSomeIndex<K extends string> = { [key in K]: string }
-
-const lastSetMap: FromSomeIndex<LastSetType> = {
-   "aa": "Tie Break",
-   "bb": "dasdasda",
-   "cc": "dasdas",
-   "dd": "dasdas"
-};
-
-const aa: LastSetType = 'bb';
-
-const label = lastSetMap[aa];
-*/
-
 
 
 @observer
@@ -143,7 +97,65 @@ export class App extends React.Component {
                         </GroupView>
                     </GroupView>
                 </GroupView>
+
+                {this.renderVisited()}
+                {this.renderValue()}
+                {this.renderSave()}
+            </div>
+        );
+    }
+
+    onSave = () => {
+        formState.setAsVisited();
+    }
+
+    private renderVisited() {
+        const isVisited = formState.isVisited;
+        return (
+            <div>
+                isVisited: { isVisited ? 'true' : 'false'}
+            </div>
+        );
+    }
+
+    private renderValue() {
+        const valueModel = formState.valueModel;
+        return (
+            <div>
+                valueModel: {valueModel instanceof Error ? '!!Error!!' : JSON.stringify(valueModel)}
+            </div>
+        );
+    }
+
+    private renderSave() {
+        const isVisited = formState.isVisited;
+        const valueModel = formState.valueModel;
+
+        return (
+            <div onClick={this.onSave}>
+                { isVisited === false || (!(valueModel instanceof Error)) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
             </div>
         );
     }
 }
+
+
+/*
+https://basarat.gitbooks.io/typescript/docs/types/index-signatures.html
+
+type LastSetType = 'aa' | 'bb' | 'cc' | 'dd';
+
+type FromSomeIndex<K extends string> = { [key in K]: string }
+
+const lastSetMap: FromSomeIndex<LastSetType> = {
+   "aa": "Tie Break",
+   "bb": "dasdasda",
+   "cc": "dasdas",
+   "dd": "dasdas"
+};
+
+const aa: LastSetType = 'bb';
+
+const label = lastSetMap[aa];
+*/
+
