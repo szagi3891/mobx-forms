@@ -43,13 +43,11 @@ export class FormModel<V> {
                 }
 
                 const valueModel = inner.valueModel;
-                if (valueModel instanceof Error) {
-                    return null;
-                }
-
-                const newValue = conv(valueModel);
-                if (newValue instanceof Error) {
-                    return newValue.message;
+                if (!(valueModel instanceof Error)) {
+                    const newValue = conv(valueModel);
+                    if (newValue instanceof Error) {
+                        return newValue.message;
+                    }
                 }
     
                 return null;
