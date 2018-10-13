@@ -33,6 +33,10 @@ export class FormModel<V> {
                 return inner.modifiedStatus;
             },
             get errorMessage(): string | null {
+                if (inner.isVisited === false) {
+                    return null;
+                }
+
                 const errorMessage = inner.errorMessage;
                 if (errorMessage !== null) {
                     return errorMessage;

@@ -2,9 +2,26 @@ import * as React from 'react';
 import { observer } from "mobx-react";
 import { FormModel } from '../Form';
 
+import styled from 'react-emotion';
+
+interface WrapperPropsType {
+    error: boolean,
+}
+
+const Wrapper = styled('div')<WrapperPropsType>`
+    border: 1px solid ${props => props.error ? 'red' : '#e0e0e0'};
+    padding: 5px;
+    margin-bottom: 5px;
+`;
+
+const ErrorWrapper = styled('div')`
+    color: red;
+    font-weight: bold;
+`;
+
 interface GroupViewPropsType {
     label: string,
-    group: FormModel<any>,
+    group: FormModel<unknown>,
     children: React.ReactNode,
 }
 
@@ -14,13 +31,19 @@ export class GroupView extends React.Component<GroupViewPropsType> {
         const { label, children } = this.props;
 
         return (
-            <div style={{border: '1px solid black', padding: '5px', marginBottom: '5px'}}>
+            <Wrapper error={this.hasError()}>
                 <div>{label}</div>
                 { children }
                 { this.renderError() }
                 { this.renderValue() }
-            </div>
+            </Wrapper>
         );
+    }
+
+    hasError(): boolean {
+        const { group } = this.props;
+        const error = group.errorMessage;
+        return error !== null;
     }
 
     renderError() {
@@ -33,20 +56,20 @@ export class GroupView extends React.Component<GroupViewPropsType> {
         }
 
         return (
-            <div style={{color: 'red', fontWeight: 'bold'}}>{error}</div>
+            <ErrorWrapper>{error}</ErrorWrapper>
         );
     }
 
     renderValue() {
-        const aa = this.props.group.valueModel;
+        const valueModel = this.props.group.valueModel;
 
-        if (aa instanceof Error) {
+        if (valueModel instanceof Error) {
             return null;
         }
 
         return (
             <pre>
-                { JSON.stringify(aa) }
+                { JSON.stringify(valueModel) }
             </pre>
         );
     }

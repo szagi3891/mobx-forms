@@ -36,6 +36,9 @@ describe('App', () => {
                 (value) => value.field1 + value.field2 > 10 ? Error('Suma za duza') : value
             );
 
+        input1.setAsVisited();
+        input2.setAsVisited();
+
         expect(input1.valueView).toEqual('');
         expect(input2.valueView).toEqual('');
         expect(field1.errorMessage).toEqual('Not number');

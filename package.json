@@ -7,12 +7,14 @@
     "@types/jest": "^23.3.5",
     "@types/react": "^16.4.16",
     "@types/react-dom": "^16.0.9",
+    "emotion": "^9.2.12",
     "jest": "^23.6.0",
     "mobx": "^5.5.0",
     "mobx-react": "^5.2.8",
     "parcel": "^1.10.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-emotion": "^9.2.12",
     "ts-jest": "^23.10.4"
   },
   "devDependencies": {

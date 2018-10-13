@@ -14,11 +14,16 @@ export class InputView extends React.Component<InputViewPropsType> {
             <input
                 value={input.valueView}
                 onChange={this.onChange}
+                onBlur={this.onBlur}
             />
         )
     }
 
     onChange = (event: React.FormEvent<HTMLInputElement>) => {
         this.props.input.setValue(event.currentTarget.value);
+    }
+
+    onBlur = () => {
+        this.props.input.setAsVisited();
     }
 }
