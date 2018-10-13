@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
 import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
-import { runInThisContext } from 'vm';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
