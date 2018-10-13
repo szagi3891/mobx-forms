@@ -8,6 +8,7 @@ export interface Value<T> {
     modifiedStatus: boolean,
     errorMessage: string | null,
     isVisited: boolean,
+    reset: () => void,
 }
 
 export class FormModel<V> {
@@ -54,6 +55,9 @@ export class FormModel<V> {
             },
             get isVisited(): boolean {
                 return inner.isVisited;
+            },
+            reset: () => {
+                inner.reset();
             }
         };
 
@@ -78,5 +82,9 @@ export class FormModel<V> {
 
     get isVisited(): boolean {
         return this.inner.isVisited;
+    }
+
+    @action reset() {
+        this.inner.reset();
     }
 }

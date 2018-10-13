@@ -43,5 +43,10 @@ export class FormInputState<K> {
     get isVisited(): boolean {
         return this.isVisitedInner;
     }
+
+    @action reset() {
+        this.value = this.initValue;
+        this.isVisitedInner = false;
+    }
 }
 

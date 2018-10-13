@@ -47,6 +47,12 @@ export class FormGroup<IN> {
         }
     }
 
+    @action reset() {
+        for (const item of this.iterateValues()) {
+            item.reset();
+        }
+    }
+
     @computed get modifiedStatus(): boolean {
         for (const item of this.iterateValues()) {
             if (item.modifiedStatus) {

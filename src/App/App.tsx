@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
 import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
+import { runInThisContext } from 'vm';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
@@ -101,6 +102,7 @@ export class App extends React.Component {
                 {this.renderVisited()}
                 {this.renderValue()}
                 {this.renderSave()}
+                {this.renderReset()}
             </div>
         );
     }
@@ -134,6 +136,18 @@ export class App extends React.Component {
         return (
             <div onClick={this.onSave}>
                 { isVisited === false || (!(valueModel instanceof Error)) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
+            </div>
+        );
+    }
+
+    onReset = () => {
+        formState.reset();
+    }
+
+    private renderReset() {
+        return (
+            <div onClick={this.onReset}>
+                Reset
             </div>
         );
     }
