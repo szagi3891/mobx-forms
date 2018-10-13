@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
 import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
+import { SelectView, OptionType } from './SelectView';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
@@ -61,11 +62,52 @@ const range = group({
     .map((value): string | Error => `${value.from}-${value.to}`)
 ;
 
+type SelectType = 'a' | 'b' | 'c' | true;
+
+const select = input<SelectType>('a');
+
 const formState = group({
     data: date1,
-    range: range
+    range: range,
+    select: select
 });
 
+const options: Array<OptionType<SelectType>> = [{
+    label: 'A',
+    value: 'a'
+}, {
+    label: 'B',
+    value: 'b'
+}, {
+    label: 'C',
+    value: 'c'
+}, {
+    label: 'TRUE',
+    value: true
+}];
+
+const serialize = (value: SelectType): string => {
+    if (typeof value === 'string') {
+        return value;
+    }
+    return 'TRUE';
+};
+
+const deserialize = (value: string): SelectType => {
+    if (value === 'a') {
+        return 'a';
+    }
+    if (value === 'b') {
+        return 'b';
+    }
+    if (value === 'c') {
+        return 'c';
+    }
+    if (value === 'TRUE') {
+        return true;
+    }
+    return 'a';
+};
 
 @observer
 export class App extends React.Component {
@@ -96,6 +138,8 @@ export class App extends React.Component {
                             <InputView input={input5} />
                         </GroupView>
                     </GroupView>
+
+                    <SelectView state={select} options={options} serialize={serialize} deserialize={deserialize} />
                 </GroupView>
 
                 {this.renderVisited()}
