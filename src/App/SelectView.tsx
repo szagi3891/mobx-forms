@@ -4,43 +4,61 @@ import { observer } from 'mobx-react';
 
 export interface OptionType<T> {
     label: string,
+    value: T
+}
+
+interface OptionItemPropsType<T> {
+    state: FormInputState<T>,
     value: T,
+    label: string,
+}
+
+class OptionItem<T> extends React.Component<OptionItemPropsType<T>> {
+    render() {
+        const { value, label } = this.props;
+
+        return (
+            <option onClick={this.onClick} value={JSON.stringify(value)}>
+                { label }
+            </option>
+        );
+    }
+
+    onClick = (e: React.SyntheticEvent) => {
+        e.stopPropagation();
+        this.props.state.setValue(this.props.value);
+    }
 }
 
 interface PropsType<T> {
     state: FormInputState<T>,
-    options: Array<OptionType<T>>,
-    serialize: (value: T) => string,
-    deserialize: (value: string) => T,
+    options: Array<OptionType<T>>
 }
 
 @observer
 export class SelectView<T> extends React.Component<PropsType<T>> {
     render() {
-        const { state, options, serialize } = this.props;
+        const { options, state } = this.props;
+        const value = JSON.stringify(state.valueView);
 
         return (
-            <select value={serialize(state.valueView)} onChange={this.handleChange}>
-                { options.map(this.renderItem) }
+            <select value={value} onChange={this.onChange}>
+                { options.map((item: OptionType<T>) => {
+                    const { state } = this.props;
+                    const { value, label } = item;
+
+                    return (
+                        <OptionItem
+                            key={label}
+                            state={state}
+                            value={value}
+                            label={label}
+                        />
+                    );
+                }) }
             </select>
         );
     }
 
-    handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const { state, deserialize } = this.props;
-        const valueSerialize = event.currentTarget.value;
-        const value = deserialize(valueSerialize);
-        state.setValue(value);
-    }
-
-    private renderItem = (item: OptionType<T>) => {
-        const { serialize } = this.props;
-        const valueString = serialize(item.value);
-
-        return (
-            <option key={valueString} value={valueString}>
-                { item.label }
-            </option>
-        );
-    }
+    onChange = () => {}
 }

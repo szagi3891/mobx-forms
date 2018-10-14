@@ -5,6 +5,7 @@ import { InputView } from './InputView';
 import { GroupView } from './GroupView';
 import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
 import { SelectView, OptionType } from './SelectView';
+import { CheckboxView } from './CheckboxView';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
@@ -64,12 +65,15 @@ const range = group({
 
 type SelectType = 'a' | 'b' | 'c' | true;
 
-const select = input<SelectType>('a');
+const select = input<SelectType>('c');
+
+const flag = input<boolean>(false);
 
 const formState = group({
     data: date1,
     range: range,
-    select: select
+    select: select,
+    flag: flag
 });
 
 const options: Array<OptionType<SelectType>> = [{
@@ -86,28 +90,6 @@ const options: Array<OptionType<SelectType>> = [{
     value: true
 }];
 
-const serialize = (value: SelectType): string => {
-    if (typeof value === 'string') {
-        return value;
-    }
-    return 'TRUE';
-};
-
-const deserialize = (value: string): SelectType => {
-    if (value === 'a') {
-        return 'a';
-    }
-    if (value === 'b') {
-        return 'b';
-    }
-    if (value === 'c') {
-        return 'c';
-    }
-    if (value === 'TRUE') {
-        return true;
-    }
-    return 'a';
-};
 
 @observer
 export class App extends React.Component {
@@ -139,7 +121,15 @@ export class App extends React.Component {
                         </GroupView>
                     </GroupView>
 
-                    <SelectView state={select} options={options} serialize={serialize} deserialize={deserialize} />
+                    <SelectView state={select} options={options} />
+
+                    <CheckboxView state={flag} />
+                    { /* FormInputState<boolean> */ }
+
+{ /*
+                    <RadioView select={select} />
+*/ }
+
                 </GroupView>
 
                 {this.renderVisited()}
