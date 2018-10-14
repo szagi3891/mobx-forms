@@ -116,6 +116,7 @@ export class App extends React.Component {
                         </GroupView>
                     </GroupView>
 
+
                     <GroupView label="Zakres (max 10 różnicy)" group={range}>
                         <GroupView label="Od" group={field4}>
                             <InputView input={input4} />
@@ -126,40 +127,36 @@ export class App extends React.Component {
                         </GroupView>
                     </GroupView>
 
-                    <CheckboxView state={flag} />
 
-                    <hr/>
+                    <GroupView label="Checkbox" group={flag}>
+                        <CheckboxView state={flag} />
+                    </GroupView>
+                    
+                    
+                    <GroupView label="RadioBox" group={select}>
+                        <Label>
+                            <RadioBoxView state={select} value="a" /> a                        
+                        </Label>
+                        <br/>
 
+                        <Label>
+                            <RadioBoxView state={select} value="b" /> b
+                        </Label>
+                        <br/>
 
-                    <Label>
-                        <RadioBoxView state={select} value="a" /> a                        
-                    </Label>
-                    <br/>
+                        <Label>
+                            <RadioBoxView state={select} value="c" /> c
+                        </Label>
+                        <br/>
 
+                        <Label>
+                            <RadioBoxView state={select} value={true} /> true
+                        </Label>
+                        <br/>
 
-                    <Label>
-                        <RadioBoxView state={select} value="b" /> b
-                    </Label>
-                    <br/>
+                        <SelectView state={select} options={options} />
 
-
-                    <Label>
-                        <RadioBoxView state={select} value="c" /> c
-                    </Label>
-                    <br/>
-
-
-                    <Label>
-                        <RadioBoxView state={select} value={true} /> true
-                    </Label>
-                    <br/>
-
-
-                    <hr/>
-
-                    <SelectView state={select} options={options} />
-
-                    <hr />
+                    </GroupView>
 
                 </GroupView>
 

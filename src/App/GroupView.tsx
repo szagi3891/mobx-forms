@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from "mobx-react";
-import { FormModel } from '../Form';
+import { FormModel, FormInputState } from '../Form';
 
 import styled from 'react-emotion';
 
@@ -21,7 +21,7 @@ const ErrorWrapper = styled('div')`
 
 interface GroupViewPropsType {
     label: string,
-    group: FormModel<unknown>,
+    group: FormModel<unknown> | FormInputState<unknown>,
     children: React.ReactNode,
 }
 
