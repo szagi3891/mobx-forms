@@ -6,6 +6,7 @@ import { GroupView } from './GroupView';
 import { validateRange, validateNotEmpty, convertToNumber } from '../Form/validators';
 import { SelectView, OptionType } from './SelectView';
 import { CheckboxView } from './CheckboxView';
+import { RadioBoxView } from './RadioBoxView';
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
@@ -90,7 +91,6 @@ const options: Array<OptionType<SelectType>> = [{
     value: true
 }];
 
-
 @observer
 export class App extends React.Component {
     render() {
@@ -121,14 +121,30 @@ export class App extends React.Component {
                         </GroupView>
                     </GroupView>
 
+                    <CheckboxView state={flag} />
+
+                    <hr/>
+
+                    <label>
+                        <RadioBoxView state={select} value="a" /> a                        
+                        <br/>
+
+                        <RadioBoxView state={select} value="b" /> b
+                        <br/>
+
+                        <RadioBoxView state={select} value="c" /> c
+                        <br/>
+
+                        <RadioBoxView state={select} value={true} /> true
+                        <br/>
+
+                    </label>
+
+                    <hr/>
+
                     <SelectView state={select} options={options} />
 
-                    <CheckboxView state={flag} />
-                    { /* FormInputState<boolean> */ }
-
-{ /*
-                    <RadioView select={select} />
-*/ }
+                    <hr />
 
                 </GroupView>
 
