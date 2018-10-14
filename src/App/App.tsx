@@ -7,6 +7,11 @@ import { validateRange, validateNotEmpty, convertToNumber } from '../Form/valida
 import { SelectView, OptionType } from './SelectView';
 import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
+import styled from 'react-emotion';
+
+const Label = styled('label')`
+    cursor: pointer;
+`;
 
 const validateDay = validateRange(1, 31, 'Niepoprawny dzień');
 const validateMonth = validateRange(1, 12, 'Niepoprawny miesiąc');
@@ -125,20 +130,30 @@ export class App extends React.Component {
 
                     <hr/>
 
-                    <label>
+
+                    <Label>
                         <RadioBoxView state={select} value="a" /> a                        
-                        <br/>
+                    </Label>
+                    <br/>
 
+
+                    <Label>
                         <RadioBoxView state={select} value="b" /> b
-                        <br/>
+                    </Label>
+                    <br/>
 
+
+                    <Label>
                         <RadioBoxView state={select} value="c" /> c
-                        <br/>
+                    </Label>
+                    <br/>
 
+
+                    <Label>
                         <RadioBoxView state={select} value={true} /> true
-                        <br/>
+                    </Label>
+                    <br/>
 
-                    </label>
 
                     <hr/>
 
