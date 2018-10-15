@@ -35,6 +35,7 @@
   },
   "scripts": {
     "start": "parcel ./src/index.html",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "ts-check": "rm -Rf dist && yarn run tsc --outDir ./dist -p ."
   }
 }
