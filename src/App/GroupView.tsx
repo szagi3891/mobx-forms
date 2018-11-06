@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { FormModel, FormInputState } from '../Form';
 
 import styled from 'react-emotion';
+import { ResultValue } from '../Form/type';
 
 interface WrapperPropsType {
     error: boolean,
@@ -63,14 +64,14 @@ export class GroupView extends React.Component<GroupViewPropsType> {
     renderValue() {
         const valueModel = this.props.group.valueModel;
 
-        if (valueModel instanceof Error) {
-            return null;
+        if (valueModel instanceof ResultValue) {
+            return (
+                <pre>
+                    { JSON.stringify(valueModel.value) }
+                </pre>
+            );
         }
 
-        return (
-            <pre>
-                { JSON.stringify(valueModel) }
-            </pre>
-        );
+        return null;
     }
 }

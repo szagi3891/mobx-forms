@@ -1,13 +1,14 @@
 import { input } from '../index';
+import { Result, ResultError, ResultValue } from '../../Form/type';
 
 const errorMessage = 'Przynajmnie dwa znaki wprowadz';
-const createError = () => new Error(errorMessage);
+const createError = () => new ResultError(errorMessage);
 
 describe('FormModel', () => {
     it('Visited', () => {
         const input1 = input('');
-        const field1 = input1.map((value: string): string | Error =>
-            value.length < 2 ? createError() : value
+        const field1 = input1.map((value: string): Result<string> =>
+            value.length < 2 ? createError() : new ResultValue(value)
         );
 
         expect(field1.valueModel).toEqual(createError());
@@ -22,7 +23,7 @@ describe('FormModel', () => {
         expect(field1.errorMessage).toEqual(errorMessage);
 
         input1.setValue('aa');
-        expect(field1.valueModel).toEqual('aa');
+        expect(field1.valueModel).toEqual(new ResultValue('aa'));
         expect(field1.errorMessage).toEqual(null);
     });
 });

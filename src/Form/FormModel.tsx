@@ -1,10 +1,9 @@
 import { computed, action } from "mobx";
-
-export type ConversionFn<T, K> = (value: T) => K | Error;
+import { ConversionFn, Result, ResultError, ResultValue } from "./type";
 
 export interface Value<T> {
     setAsVisited: () => void,
-    valueModel: T | Error,
+    valueModel: Result<T>,
     modifiedStatus: boolean,
     errorMessage: string | null,
     isVisited: boolean,
@@ -26,9 +25,9 @@ export class FormModel<V> {
             setAsVisited: () => {
                 inner.setAsVisited();
             },
-            get valueModel(): C | Error {
+            get valueModel(): Result<C> {
                 const valueModel = inner.valueModel;
-                return valueModel instanceof Error ? valueModel : conv(valueModel);
+                return valueModel instanceof ResultError ? valueModel : conv(valueModel.value);
             },
             get modifiedStatus(): boolean {
                 return inner.modifiedStatus;
@@ -44,9 +43,9 @@ export class FormModel<V> {
                 }
 
                 const valueModel = inner.valueModel;
-                if (!(valueModel instanceof Error)) {
-                    const newValue = conv(valueModel);
-                    if (newValue instanceof Error) {
+                if (valueModel instanceof ResultValue) {
+                    const newValue = conv(valueModel.value);
+                    if (newValue instanceof ResultError) {
                         return newValue.message;
                     }
                 }
@@ -68,7 +67,7 @@ export class FormModel<V> {
         this.inner.setAsVisited();
     }
 
-    @computed get valueModel(): V | Error {
+    @computed get valueModel(): Result<V> {
         return this.inner.valueModel;
     }
 

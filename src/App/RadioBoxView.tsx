@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormInputState } from 'Form';
+import { FormInputState } from '../Form';
 import { observer } from 'mobx-react';
 
 interface PropsType<T> {

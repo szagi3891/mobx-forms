@@ -1,14 +1,10 @@
 import { action, computed } from "mobx";
 import { FormInputState } from "./FormInputState";
 import { FormModel } from "./FormModel";
-
-export type ConversionFn<T, K> = (value: T) => K | Error;
+import { ConversionFn, Result, ResultValue } from "./type";
 
 type Value<T> = FormInputState<T> | FormModel<T>;
 
-/*export type InGroupType<T> = {
-    readonly [P in keyof T]: Value<T[P]>;
-};*/
 
 export type Model<T> = {
     readonly [P in keyof T]:
@@ -67,21 +63,21 @@ export class FormGroup<IN> {
         return new FormModel<Model<IN>>(this).map(conv);
     }
 
-    @computed get valueModel(): Model<IN> | Error {
-        const modelOut = {};
+    @computed get valueModel(): Result<Model<IN>> {
+        //@ts-ignore
+        const modelOut: Model<IN> = {};
 
         for (const [key, item] of this.iterate()) {
             const value = item.valueModel;
-            if (value instanceof Error) {
+            if (value instanceof ResultValue) {
+                //@ts-ignore
+                modelOut[key] = value.value;
+            } else {
                 return value;
             }
-
-            //@ts-ignore
-            modelOut[key] = value;
         }
 
-        //@ts-ignore
-        return modelOut;
+        return new ResultValue(modelOut);
     }
 
     @computed get isVisited(): boolean {

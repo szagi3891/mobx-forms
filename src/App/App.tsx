@@ -8,6 +8,7 @@ import { SelectView, OptionType } from './SelectView';
 import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
 import styled from 'react-emotion';
+import { Result, ResultError, ResultValue } from '../Form/type';
 
 const Label = styled('label')`
     cursor: pointer;
@@ -22,9 +23,9 @@ interface FromToType {
     to: number,
 }
 
-const acceptRange = (maxDelta: number) => (value: FromToType): FromToType | Error => {
+const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType> => {
     const delta = Math.abs(value.to - value.from);
-    return delta > maxDelta ? new Error('Zbyt dua odległośc pomiędzy oboma liczbami') : value;
+    return delta > maxDelta ? new ResultError('Zbyt dua odległośc pomiędzy oboma liczbami') : new ResultValue(value);
 }
 
 const input1 = input('');
@@ -66,7 +67,7 @@ const range = group({
         to: field5
     })
     .map(acceptRange(10))
-    .map((value): string | Error => `${value.from}-${value.to}`)
+    .map((value): Result<string> => new ResultValue(`${value.from}-${value.to}`))
 ;
 
 type SelectType = 'a' | 'b' | 'c' | true;
@@ -185,7 +186,7 @@ export class App extends React.Component {
         const valueModel = formState.valueModel;
         return (
             <div>
-                valueModel: {valueModel instanceof Error ? '!!Error!!' : JSON.stringify(valueModel)}
+                valueModel: {valueModel instanceof ResultValue ? JSON.stringify(valueModel.value) : '!!Error!!'}
             </div>
         );
     }
@@ -196,7 +197,7 @@ export class App extends React.Component {
 
         return (
             <div onClick={this.onSave}>
-                { isVisited === false || (!(valueModel instanceof Error)) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
+                { isVisited === false || (valueModel instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
             </div>
         );
     }

@@ -1,5 +1,6 @@
 import { observable, computed, action } from "mobx";
-import { ConversionFn, FormModel } from "./FormModel";
+import { FormModel } from "./FormModel";
+import { ConversionFn, Result, ResultValue } from "./type";
 
 export class FormInputState<K> {
     private readonly initValue: K;
@@ -28,8 +29,8 @@ export class FormInputState<K> {
         return this.value;
     }
 
-    @computed get valueModel(): K | Error {
-        return this.value;
+    @computed get valueModel(): Result<K> {
+        return new ResultValue(this.value);
     }
 
     @computed get modifiedStatus(): boolean {
