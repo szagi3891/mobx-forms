@@ -27,7 +27,7 @@ export class FormModel<V> {
             },
             get valueModel(): Result<C> {
                 const valueModel = inner.valueModel;
-                return valueModel instanceof ResultError ? valueModel : conv(valueModel.value);
+                return valueModel instanceof ResultValue ? conv(valueModel.value) : valueModel;
             },
             get modifiedStatus(): boolean {
                 return inner.modifiedStatus;
