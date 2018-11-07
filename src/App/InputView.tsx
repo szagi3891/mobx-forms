@@ -12,7 +12,7 @@ export class InputView extends React.Component<InputViewPropsType> {
         const { input } = this.props;
         return (
             <input
-                value={input.valueView}
+                value={input.value}
                 onChange={this.onChange}
                 onBlur={this.onBlur}
             />

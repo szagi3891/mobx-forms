@@ -183,21 +183,21 @@ export class App extends React.Component {
     }
 
     private renderValue() {
-        const valueModel = formState.valueModel;
+        const model = formState.value;
         return (
             <div>
-                valueModel: {valueModel instanceof ResultValue ? JSON.stringify(valueModel.value) : '!!Error!!'}
+                model: {model instanceof ResultValue ? JSON.stringify(model.value) : '!!Error!!'}
             </div>
         );
     }
 
     private renderSave() {
         const isVisited = formState.isVisited;
-        const valueModel = formState.valueModel;
+        const model = formState.value;
 
         return (
             <div onClick={this.onSave}>
-                { isVisited === false || (valueModel instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
+                { isVisited === false || (model instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
             </div>
         );
     }

@@ -39,7 +39,7 @@ interface PropsType<T> {
 export class SelectView<T> extends React.Component<PropsType<T>> {
     render() {
         const { options, state } = this.props;
-        const value = JSON.stringify(state.valueView);
+        const value = JSON.stringify(state.value);
 
         return (
             <select value={value} onChange={this.onChange}>

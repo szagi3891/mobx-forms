@@ -11,7 +11,7 @@ interface PropsType<T> {
 export class RadioBoxView<T> extends React.Component<PropsType<T>> {
     render() {
         const { state, value } = this.props;
-        const checked = state.valueView === value;
+        const checked = state.value === value;
 
         return (
             <input type="radio" checked={checked} onClick={this.onClick} onChange={this.onChange} />

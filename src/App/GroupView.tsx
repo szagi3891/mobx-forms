@@ -20,14 +20,14 @@ const ErrorWrapper = styled('div')`
     font-weight: bold;
 `;
 
-interface GroupViewPropsType {
+interface GroupViewPropsType<T> {
     label: string,
-    group: FormModel<unknown> | FormInputState<unknown>,
+    group: FormModel<T> | FormInputState<T>,
     children: React.ReactNode,
 }
 
 @observer
-export class GroupView extends React.Component<GroupViewPropsType> {
+export class GroupView<T> extends React.Component<GroupViewPropsType<T>> {
     render() {
         const { label, children } = this.props;
 
@@ -43,26 +43,34 @@ export class GroupView extends React.Component<GroupViewPropsType> {
 
     hasError(): boolean {
         const { group } = this.props;
-        const error = group.errorMessage;
-        return error !== null;
+        if (group instanceof FormModel) {
+            const error = group.errorMessage;
+            return error !== null;
+        }
+
+        return false;
     }
 
     renderError() {
         const { group } = this.props;
 
-        const error = group.errorMessage;
+        if (group instanceof FormModel) {
+            const error = group.errorMessage;
 
-        if (error === null) {
-            return null;
+            if (error === null) {
+                return null;
+            }
+
+            return (
+                <ErrorWrapper>{error}</ErrorWrapper>
+            );
         }
 
-        return (
-            <ErrorWrapper>{error}</ErrorWrapper>
-        );
+        return null;
     }
 
     renderValue() {
-        const valueModel = this.props.group.valueModel;
+        const valueModel = this.props.group.value;
 
         if (valueModel instanceof ResultValue) {
             return (

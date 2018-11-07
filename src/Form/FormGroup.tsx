@@ -1,7 +1,7 @@
 import { action, computed } from "mobx";
 import { FormInputState } from "./FormInputState";
 import { FormModel } from "./FormModel";
-import { ConversionFn, Result, ResultValue } from "./type";
+import { Result, ResultValue, ResultError } from "./type";
 
 type Value<T> = FormInputState<T> | FormModel<T>;
 
@@ -20,21 +20,15 @@ export class FormGroup<IN> {
         this.fields = fields;
     }
 
-    iterate(): Array<[string, Value<unknown>]> {
-        const out: Array<[string, Value<unknown>]> = [];
+    iterateValues(): Array<Value<unknown>> {
+        const out: Array<Value<unknown>> = [];
 
-        for (const [key, item] of Object.entries(this.fields)) {
+        for (const item of Object.values(this.fields)) {
             if (item instanceof FormInputState || item instanceof FormModel) {
-                out.push([key, item]);
-            } else {
-                throw Error('Nieprawidłowe odgałęzenie');
+                out.push(item);
             }
         }
         return out;
-    }
-
-    iterateValues(): Array<Value<unknown>> {
-        return this.iterate().map(([_key, item]) => item);
     }
 
     @action setAsVisited() {
@@ -59,21 +53,32 @@ export class FormGroup<IN> {
         return false;
     }
 
-    map<C>(conv: ConversionFn<Model<IN>, Model<C>>): FormModel<Model<C>> {
-        return new FormModel<Model<IN>>(this).map(conv);
-    }
-
-    @computed get valueModel(): Result<Model<IN>> {
+    @computed get value(): Result<Model<IN>> {
         //@ts-ignore
         const modelOut: Model<IN> = {};
 
-        for (const [key, item] of this.iterate()) {
-            const value = item.valueModel;
-            if (value instanceof ResultValue) {
+        for (const [key, item] of Object.entries(this.fields)) {
+
+            if (item instanceof FormInputState) {
+
+                const value = item.value;
                 //@ts-ignore
-                modelOut[key] = value.value;
+                modelOut[key] = value;
+
+            } else if (item instanceof FormModel) {
+
+                const value = item.value;
+                if (value instanceof ResultValue) {
+                    const innerValue = value.value;
+                    //@ts-ignore
+                    modelOut[key] = innerValue;
+                } else {
+                    return value;
+                }
+
             } else {
-                return value;
+                //@ts-ignore
+                modelOut[key] = item;
             }
         }
 
@@ -91,8 +96,7 @@ export class FormGroup<IN> {
         return true;
     }
 
-    @computed get errorMessage(): string | null {
-                                                                //interesują nas błędy tylko grupy, nie poszczególnych pól formularza
+    get error(): ResultError | null {
         return null;
     }
 }

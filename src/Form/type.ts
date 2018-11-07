@@ -1,15 +1,13 @@
-
 export class ResultValue<T> {
     constructor(readonly value: T) {}
 }
 
-class ResultWaiting {}
-
 export class ResultError {
-    constructor(readonly message: string) {}
+    //string - error
+    //null - waiting for validation
+    constructor(readonly message: string | null) {}
 }
 
-export type Result<T> = ResultValue<T> | ResultWaiting | ResultError;
-
+export type Result<T> = ResultValue<T> | ResultError;
 
 export type ConversionFn<T, K> = (value: T) => Result<K>;

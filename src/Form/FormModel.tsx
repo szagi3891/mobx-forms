@@ -3,9 +3,9 @@ import { ConversionFn, Result, ResultError, ResultValue } from "./type";
 
 export interface Value<T> {
     setAsVisited: () => void,
-    valueModel: Result<T>,
+    value: Result<T>,
     modifiedStatus: boolean,
-    errorMessage: string | null,
+    error: ResultError | null,
     isVisited: boolean,
     reset: () => void,
 }
@@ -25,31 +25,31 @@ export class FormModel<V> {
             setAsVisited: () => {
                 inner.setAsVisited();
             },
-            get valueModel(): Result<C> {
-                const valueModel = inner.valueModel;
+            get value(): Result<C> {
+                const valueModel = inner.value;
                 return valueModel instanceof ResultValue ? conv(valueModel.value) : valueModel;
             },
             get modifiedStatus(): boolean {
                 return inner.modifiedStatus;
             },
-            get errorMessage(): string | null {
+            get error(): ResultError | null {
                 if (inner.isVisited === false) {
                     return null;
                 }
 
-                const errorMessage = inner.errorMessage;
-                if (errorMessage !== null) {
-                    return errorMessage;
+                const error = inner.error;
+                if (error !== null) {
+                    return error;
                 }
 
-                const valueModel = inner.valueModel;
+                const valueModel = inner.value;
                 if (valueModel instanceof ResultValue) {
                     const newValue = conv(valueModel.value);
                     if (newValue instanceof ResultError) {
-                        return newValue.message;
+                        return newValue;
                     }
                 }
-    
+
                 return null;
             },
             get isVisited(): boolean {
@@ -67,8 +67,8 @@ export class FormModel<V> {
         this.inner.setAsVisited();
     }
 
-    @computed get valueModel(): Result<V> {
-        return this.inner.valueModel;
+    @computed get value(): Result<V> {
+        return this.inner.value;
     }
 
     @computed get modifiedStatus(): boolean {
@@ -76,7 +76,8 @@ export class FormModel<V> {
     }
 
     @computed get errorMessage(): string | null {
-        return this.inner.errorMessage;
+        const error = this.inner.error;
+        return error instanceof ResultError ? error.message : null;
     }
 
     get isVisited(): boolean {

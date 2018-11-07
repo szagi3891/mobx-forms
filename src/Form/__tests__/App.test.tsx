@@ -40,69 +40,69 @@ describe('App', () => {
         input1.setAsVisited();
         input2.setAsVisited();
 
-        expect(input1.valueView).toEqual('');
-        expect(input2.valueView).toEqual('');
+        expect(input1.value).toEqual('');
+        expect(input2.value).toEqual('');
         expect(field1.errorMessage).toEqual('Not number');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultError('Not number'));
+        expect(form.value).toEqual(new ResultError('Not number'));
 
         input1.setValue('aa');
 
-        expect(input1.valueView).toEqual('aa');
-        expect(input2.valueView).toEqual('');
+        expect(input1.value).toEqual('aa');
+        expect(input2.value).toEqual('');
         expect(field1.errorMessage).toEqual('Not number');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultError('Not number'));
+        expect(form.value).toEqual(new ResultError('Not number'));
 
         input1.setValue('8');
 
-        expect(input1.valueView).toEqual('8');
-        expect(input2.valueView).toEqual('');
+        expect(input1.value).toEqual('8');
+        expect(input2.value).toEqual('');
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultError('Not number'));
+        expect(form.value).toEqual(new ResultError('Not number'));
 
 
         input1.setValue('11');
 
-        expect(input1.valueView).toEqual('11');
-        expect(input2.valueView).toEqual('');
+        expect(input1.value).toEqual('11');
+        expect(input2.value).toEqual('');
         expect(field1.errorMessage).toEqual('Za duża liczba');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultError('Za duża liczba'));
+        expect(form.value).toEqual(new ResultError('Za duża liczba'));
 
 
         input1.setValue('8');
 
-        expect(input1.valueView).toEqual('8');
-        expect(input2.valueView).toEqual('');
+        expect(input1.value).toEqual('8');
+        expect(input2.value).toEqual('');
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultError('Not number'));
+        expect(form.value).toEqual(new ResultError('Not number'));
 
 
         input2.setValue('1');
 
-        expect(input1.valueView).toEqual('8');
-        expect(input2.valueView).toEqual('1');
+        expect(input1.value).toEqual('8');
+        expect(input2.value).toEqual('1');
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual(null);
         expect(form.errorMessage).toEqual(null);
-        expect(form.valueModel).toEqual(new ResultValue({field1: 8, field2: 1}));
+        expect(form.value).toEqual(new ResultValue({field1: 8, field2: 1}));
 
         
         input2.setValue('3');
 
-        expect(input1.valueView).toEqual('8');
-        expect(input2.valueView).toEqual('3');
+        expect(input1.value).toEqual('8');
+        expect(input2.value).toEqual('3');
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual(null);
         expect(form.errorMessage).toEqual("Suma za duza");
-        expect(form.valueModel).toEqual(new ResultError("Suma za duza"));
+        expect(form.value).toEqual(new ResultError("Suma za duza"));
     });
 })

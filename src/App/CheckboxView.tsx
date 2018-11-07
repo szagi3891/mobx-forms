@@ -13,7 +13,7 @@ export class CheckboxView extends React.Component<PropsType> {
         return (
             <input
                 type="checkbox"
-                checked={state.valueView}
+                checked={state.value}
                 onClick={this.onClick}
                 onBlur={this.onBlur}
                 onChange={this.onChange}
@@ -23,7 +23,7 @@ export class CheckboxView extends React.Component<PropsType> {
 
     onClick = () => {
         const { state } = this.props;
-        state.setValue(!state.valueView);
+        state.setValue(!state.value);
     }
 
     onBlur = () => {
