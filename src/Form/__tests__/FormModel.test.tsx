@@ -11,19 +11,19 @@ describe('FormModel', () => {
             value.length < 2 ? createError() : new ResultValue(value)
         );
 
-        expect(field1.value).toEqual(createError());
+        expect(field1.result).toEqual(createError());
         expect(field1.errorMessage).toEqual(null);
 
         input1.setAsVisited();
-        expect(field1.value).toEqual(createError());
+        expect(field1.result).toEqual(createError());
         expect(field1.errorMessage).toEqual(errorMessage);
 
         input1.setValue('a');
-        expect(field1.value).toEqual(createError());
+        expect(field1.result).toEqual(createError());
         expect(field1.errorMessage).toEqual(errorMessage);
 
         input1.setValue('aa');
-        expect(field1.value).toEqual(new ResultValue('aa'));
+        expect(field1.result).toEqual(new ResultValue('aa'));
         expect(field1.errorMessage).toEqual(null);
     });
 });

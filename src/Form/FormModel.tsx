@@ -3,7 +3,7 @@ import { ConversionFn, Result, ResultError, ResultValue } from "./type";
 
 export interface Value<T> {
     setAsVisited: () => void,
-    value: Result<T>,
+    result: Result<T>,
     modifiedStatus: boolean,
     error: ResultError | null,
     isVisited: boolean,
@@ -25,8 +25,8 @@ export class FormModel<V> {
             setAsVisited: () => {
                 inner.setAsVisited();
             },
-            get value(): Result<C> {
-                const valueModel = inner.value;
+            get result(): Result<C> {
+                const valueModel = inner.result;
                 return valueModel instanceof ResultValue ? conv(valueModel.value) : valueModel;
             },
             get modifiedStatus(): boolean {
@@ -42,7 +42,7 @@ export class FormModel<V> {
                     return error;
                 }
 
-                const valueModel = inner.value;
+                const valueModel = inner.result;
                 if (valueModel instanceof ResultValue) {
                     const newValue = conv(valueModel.value);
                     if (newValue instanceof ResultError) {
@@ -67,8 +67,8 @@ export class FormModel<V> {
         this.inner.setAsVisited();
     }
 
-    @computed get value(): Result<V> {
-        return this.inner.value;
+    @computed get result(): Result<V> {
+        return this.inner.result;
     }
 
     @computed get modifiedStatus(): boolean {

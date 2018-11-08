@@ -73,8 +73,10 @@ const range = group({
 type SelectType = 'a' | 'b' | 'c' | true;
 
 const select = input<SelectType>('c');
+const selectModel = select.toModel();
 
 const flag = input<boolean>(false);
+const flagModel = flag.toModel();
 
 const formState = group({
     data: date1,
@@ -129,12 +131,12 @@ export class App extends React.Component {
                     </GroupView>
 
 
-                    <GroupView label="Checkbox" group={flag}>
+                    <GroupView label="Checkbox" group={flagModel}>
                         <CheckboxView state={flag} />
                     </GroupView>
                     
                     
-                    <GroupView label="RadioBox" group={select}>
+                    <GroupView label="RadioBox" group={selectModel}>
                         <Label>
                             <RadioBoxView state={select} value="a" /> a                        
                         </Label>
@@ -183,21 +185,21 @@ export class App extends React.Component {
     }
 
     private renderValue() {
-        const model = formState.value;
+        const result = formState.result;
         return (
             <div>
-                model: {model instanceof ResultValue ? JSON.stringify(model.value) : '!!Error!!'}
+                result: {result instanceof ResultValue ? JSON.stringify(result.value) : '!!Error!!'}
             </div>
         );
     }
 
     private renderSave() {
         const isVisited = formState.isVisited;
-        const model = formState.value;
+        const result = formState.result;
 
         return (
             <div onClick={this.onSave}>
-                { isVisited === false || (model instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
+                { isVisited === false || (result instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
             </div>
         );
     }

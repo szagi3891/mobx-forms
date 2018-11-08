@@ -1,6 +1,6 @@
 import { observable, computed, action } from "mobx";
 import { FormModel } from "./FormModel";
-import { ConversionFn, Result, ResultError } from "./type";
+import { ConversionFn, Result, ResultError, ResultValue } from "./type";
 
 export class FormInputState<K> {
     private readonly initValue: K;
@@ -21,6 +21,10 @@ export class FormInputState<K> {
         this.isVisitedInner = true;
     }
 
+    toModel(): FormModel<K> {
+        return this.map((item: K): Result<K> => new ResultValue(item));
+    }
+
     map<C>(conv: ConversionFn<K, C>): FormModel<C> {
         const inner = this;
 
@@ -28,7 +32,7 @@ export class FormInputState<K> {
             setAsVisited: () => {
                 inner.setAsVisited();
             },
-            get value(): Result<C> {
+            get result(): Result<C> {
                 const valueModel = inner.value;
                 return conv(valueModel);
             },

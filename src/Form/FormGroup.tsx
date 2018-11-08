@@ -53,7 +53,7 @@ export class FormGroup<IN> {
         return false;
     }
 
-    @computed get value(): Result<Model<IN>> {
+    @computed get result(): Result<Model<IN>> {
         //@ts-ignore
         const modelOut: Model<IN> = {};
 
@@ -67,7 +67,7 @@ export class FormGroup<IN> {
 
             } else if (item instanceof FormModel) {
 
-                const value = item.value;
+                const value = item.result;
                 if (value instanceof ResultValue) {
                     const innerValue = value.value;
                     //@ts-ignore
