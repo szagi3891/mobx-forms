@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { input, group } from '../Form';
+import { input, group, groupArray } from '../Form';
 import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
@@ -78,11 +78,36 @@ const selectModel = select.toModel();
 const flag = input<boolean>(false);
 const flagModel = flag.toModel();
 
+
+const selectList = [
+    input<SelectType>('c'),
+    input<SelectType>('a'),
+    input<SelectType>(true)
+];
+
+const selectListGroup = groupArray(selectList).map((value) => {
+    let count = 0;
+    for (const item of value) {
+        if (item === true) {
+            count++;
+        }
+    }
+
+    if (count > 1) {
+        return new ResultValue(value);
+    }
+
+    return new ResultError('Wybierz "true" przynajmniej dwa razy');
+});
+
+
+
 const formState = group({
     data: date1,
     range: range,
     select: select,
-    flag: flag
+    flag: flag,
+    selectList: selectListGroup
 });
 
 const options: Array<OptionType<SelectType>> = [{
@@ -159,6 +184,12 @@ export class App extends React.Component {
 
                         <SelectView state={select} options={options} />
 
+                    </GroupView>
+
+                    <GroupView label="selectListGrpup" group={selectListGroup}>
+                        { selectList.map((select, index) =>
+                            <SelectView key={index} state={select} options={options} />
+                        )}
                     </GroupView>
 
                 </GroupView>

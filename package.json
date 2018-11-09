@@ -22,7 +22,7 @@
     "websocket": "^1.0.28"
   },
   "devDependencies": {
-    "typescript": "^3.1.1"
+    "typescript": "^3.2.0-dev.20181107"
   },
   "jest": {
     "moduleFileExtensions": [

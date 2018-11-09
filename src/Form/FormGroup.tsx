@@ -20,6 +20,10 @@ export class FormGroup<IN> {
         this.fields = fields;
     }
 
+    static create<IN>(value: IN): FormModel<Model<IN>> {
+        return new FormModel(new FormGroup(value));
+    }
+
     iterateValues(): Array<Value<unknown>> {
         const out: Array<Value<unknown>> = [];
 
