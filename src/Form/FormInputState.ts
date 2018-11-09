@@ -7,10 +7,10 @@ export class FormInputState<K> {
     @observable private innerValue: K;
     @observable private isVisitedInner: boolean;
 
-    constructor(value: K) {
+    constructor(value: K, isVisited: boolean) {
         this.initValue = value;
         this.innerValue = value;
-        this.isVisitedInner = false;
+        this.isVisitedInner = isVisited;
     }
 
     @action setValue(value: K) {

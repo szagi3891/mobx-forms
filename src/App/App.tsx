@@ -80,9 +80,11 @@ const flagModel = flag.toModel();
 
 
 const selectList = [
-    input<SelectType>('c'),
-    input<SelectType>('a'),
-    input<SelectType>(true)
+    input<SelectType>('c', true),
+    input<SelectType>('a', true),
+    input<SelectType>(true, true),
+    input<SelectType>('a', true),
+    input<SelectType>(true, true)
 ];
 
 const selectListGroup = groupArray(selectList).map((value) => {
