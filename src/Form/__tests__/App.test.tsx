@@ -45,7 +45,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual('Not number');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.result).toEqual(new ResultError('Not number'));
+        expect(form.result).toEqual(new ResultError('Not number', false));
+        expect(form.errorMessage).toEqual(null);
 
         input1.setValue('aa');
 
@@ -54,7 +55,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual('Not number');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.result).toEqual(new ResultError('Not number'));
+        expect(form.result).toEqual(new ResultError('Not number', false));
+        expect(form.errorMessage).toEqual(null);
 
         input1.setValue('8');
 
@@ -63,7 +65,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.result).toEqual(new ResultError('Not number'));
+        expect(form.result).toEqual(new ResultError('Not number', false));
+        expect(form.errorMessage).toEqual(null);
 
 
         input1.setValue('11');
@@ -73,7 +76,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual('Za duża liczba');
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.result).toEqual(new ResultError('Za duża liczba'));
+        expect(form.result).toEqual(new ResultError('Za duża liczba', false));
+        expect(form.errorMessage).toEqual(null);
 
 
         input1.setValue('8');
@@ -83,7 +87,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual('Not number');
         expect(form.errorMessage).toEqual(null);
-        expect(form.result).toEqual(new ResultError('Not number'));
+        expect(form.result).toEqual(new ResultError('Not number', false));
+        expect(form.errorMessage).toEqual(null);
 
 
         input2.setValue('1');
@@ -94,6 +99,7 @@ describe('App', () => {
         expect(field2.errorMessage).toEqual(null);
         expect(form.errorMessage).toEqual(null);
         expect(form.result).toEqual(new ResultValue({field1: 8, field2: 1}));
+        expect(form.errorMessage).toEqual(null);
 
         
         input2.setValue('3');
@@ -103,6 +109,8 @@ describe('App', () => {
         expect(field1.errorMessage).toEqual(null);
         expect(field2.errorMessage).toEqual(null);
         expect(form.errorMessage).toEqual("Suma za duza");
-        expect(form.result).toEqual(new ResultError("Suma za duza"));
+        expect(form.result).toEqual(new ResultError("Suma za duza", true));
+        expect(form.errorMessage).toEqual("Suma za duza");
+
     });
 })

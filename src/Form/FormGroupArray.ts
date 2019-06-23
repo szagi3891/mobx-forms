@@ -1,20 +1,15 @@
 import { FormModel } from "./FormModel";
 import { action, computed } from "mobx";
-import { Result, ResultValue, ResultError } from "./type";
 import { FormInputState } from ".";
 
-type Value<T> = FormInputState<T> | FormModel<T>;
+type FormBox<K> = FormInputState<K> | FormModel<K>;
 
 export class FormGroupArray<K> {
 
-    readonly fields: ReadonlyArray<Value<K>>;
+    readonly fields: ReadonlyArray<FormBox<K>>;
 
-    constructor(fields: ReadonlyArray<Value<K>>) {
+    constructor(fields: ReadonlyArray<FormBox<K>>) {
         this.fields = fields;
-    }
-
-    static create<IN>(fields: Array<Value<IN>>): FormModel<Array<IN>> {
-        return new FormModel(new FormGroupArray(fields));
     }
 
     @action setAsVisited() {
@@ -39,26 +34,6 @@ export class FormGroupArray<K> {
         return false;
     }
 
-    @computed get result(): Result<Array<K>> {
-        const modelOut: Array<K> = [];
-
-        for (const item of this.fields) {
-            if (item instanceof FormInputState) {
-                modelOut.push(item.value);
-
-            } else {
-                const value = item.result;
-                if (value instanceof ResultValue) {
-                    modelOut.push(value.value);
-                } else {
-                    return value;
-                }
-            }
-        }
-
-        return new ResultValue(modelOut);
-    }
-
     @computed get isVisited(): boolean {
                                                     //wszystkie musza być odwiedzone żeby ta grupa była traktowana jako odwiedzona
         for (const item of this.fields) {
@@ -68,9 +43,5 @@ export class FormGroupArray<K> {
         }
 
         return true;
-    }
-
-    get error(): ResultError | null {
-        return null;
     }
 }

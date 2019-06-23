@@ -8,26 +8,27 @@ export interface OptionType<T> {
 }
 
 interface OptionItemPropsType<T> {
-    state: FormInputState<T>,
+    //state: FormInputState<T>,
     value: T,
     label: string,
 }
 
+@observer
 class OptionItem<T> extends React.Component<OptionItemPropsType<T>> {
     render() {
         const { value, label } = this.props;
 
         return (
-            <option onClick={this.onClick} value={JSON.stringify(value)}>
+            <option /*onClick={this.onClick}*/ value={JSON.stringify(value)}>
                 { label }
             </option>
         );
     }
 
-    onClick = (e: React.SyntheticEvent) => {
+    /*onClick = (e: React.SyntheticEvent) => {
         e.stopPropagation();
         this.props.state.setValue(this.props.value);
-    }
+    }*/
 }
 
 interface PropsType<T> {
@@ -39,18 +40,18 @@ interface PropsType<T> {
 export class SelectView<T> extends React.Component<PropsType<T>> {
     render() {
         const { options, state } = this.props;
-        const value = JSON.stringify(state.value);
+        const value = JSON.stringify(state.value);                              //Hack
 
         return (
             <select value={value} onChange={this.onChange}>
                 { options.map((item: OptionType<T>) => {
-                    const { state } = this.props;
+                    //const { state } = this.props;
                     const { value, label } = item;
 
                     return (
                         <OptionItem
                             key={label}
-                            state={state}
+                            //state={state}
                             value={value}
                             label={label}
                         />
@@ -60,5 +61,10 @@ export class SelectView<T> extends React.Component<PropsType<T>> {
         );
     }
 
-    onChange = () => {}
+    onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectValue: T = JSON.parse(e.currentTarget.value);               //Hack
+
+        this.props.state.setValue(selectValue);
+        //console.info('onChange');
+    }
 }
