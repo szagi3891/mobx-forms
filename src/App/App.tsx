@@ -7,7 +7,7 @@ import { validateRange, validateNotEmpty, convertToNumber } from '../Form/valida
 import { SelectView, OptionType } from './SelectView';
 import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import { Result, ResultError, ResultValue } from '../Form/type';
 
 const Label = styled('label')`

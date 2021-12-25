@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observer } from "mobx-react";
 import { FormModel } from '../Form';
 
-import styled from 'react-emotion';
+import styled from '@emotion/styled';
 import { ResultValue } from '../Form/type';
 
 interface WrapperPropsType {
