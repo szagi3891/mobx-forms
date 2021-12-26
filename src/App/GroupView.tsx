@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { observer } from "mobx-react";
-import { FormModel } from '../Form';
+import { FormModelType } from 'src/Form/FormModel';
 
 import styled from '@emotion/styled';
-import { ResultValue } from '../Form/type';
 
 interface WrapperPropsType {
     error: boolean,
@@ -22,7 +21,7 @@ const ErrorWrapper = styled('div')`
 
 interface GroupViewPropsType<T> {
     label: string,
-    group: FormModel<T>,
+    group: FormModelType<T>,
     children: React.ReactNode,
 }
 
@@ -43,14 +42,14 @@ export class GroupView<T> extends React.Component<GroupViewPropsType<T>> {
 
     hasError(): boolean {
         const { group } = this.props;
-        const error = group.errorMessage;
+        const error = group.errors;
         return error !== null;
     }
 
     renderError() {
         const { group } = this.props;
 
-        const error = group.errorMessage;
+        const error = group.errors;
 
         if (error === null) {
             return null;
@@ -64,7 +63,7 @@ export class GroupView<T> extends React.Component<GroupViewPropsType<T>> {
     renderValue() {
         const valueModel = this.props.group.result;
 
-        if (valueModel instanceof ResultValue) {
+        if (valueModel.type === 'ok') {
             return (
                 <pre>
                     { JSON.stringify(valueModel.value) }

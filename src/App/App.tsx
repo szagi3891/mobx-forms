@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { input, group, groupArray } from '../Form';
 import { observer } from 'mobx-react';
 import { InputView } from './InputView';
 import { GroupView } from './GroupView';
@@ -8,7 +7,8 @@ import { SelectView, OptionType } from './SelectView';
 import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
 import styled from '@emotion/styled';
-import { Result, ResultError, ResultValue } from '../Form/type';
+import { FormInputState } from '../Form/FormInputState';
+import { FormModel, Result } from '../Form/FormModel';
 
 const Label = styled('label')`
     cursor: pointer;
@@ -25,69 +25,82 @@ interface FromToType {
 
 const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType> => {
     const delta = Math.abs(value.to - value.from);
-    return delta > maxDelta ? new ResultError('Zbyt dua odległośc pomiędzy oboma liczbami') : new ResultValue(value);
+    if (delta > maxDelta) {
+        return {
+            type: 'error',
+            message: ['Zbyt dua odległośc pomiędzy oboma liczbami']
+        };
+    }
+    
+    return {
+        type: 'ok',
+        value
+    };
 }
 
-const input1 = input('');
+const input1 = FormInputState.create('');
 const field1 = input1
-    .map(validateNotEmpty)
-    .map(convertToNumber)
+    .map(validateNotEmpty('Input1: Wprowadź wartość'))
+    .map(convertToNumber('Input1: Wprowadź poprawną liczbę'))
     .map(validateDay);
 
-const input2 = input('');
+const input2 = FormInputState.create('');
 const field2 = input2
-    .map(validateNotEmpty)
-    .map(convertToNumber)
+    .map(validateNotEmpty('Input2: Wprowadź wartość'))
+    .map(convertToNumber('Input2: Wprowadź poprawną liczbę'))
     .map(validateMonth);
 
-const input3 = input('');
+const input3 = FormInputState.create('');
 const field3 = input3
-    .map(validateNotEmpty)
-    .map(convertToNumber)
+    .map(validateNotEmpty('Input3: Wprowadź wartość'))
+    .map(convertToNumber('Input3: Wprowadź poprawną liczbę'))
     .map(validateYear);
 
-const date1 = group({
+const date1 = FormModel.group({
     day: field1,
     month: field2,
     year: field3
 });
 
-const input4 = input('');
+const input4 = FormInputState.create('');
 const field4 = input4
-    .map(validateNotEmpty)
-    .map(convertToNumber);
+    .map(validateNotEmpty('Input4: Wprowadź wartość'))
+    .map(convertToNumber('Input4: Wprowadź poprawną liczbę'));
 
-const input5 = input('');
+const input5 = FormInputState.create('');
 const field5 = input5
-    .map(validateNotEmpty)
-    .map(convertToNumber);
+    .map(validateNotEmpty('Input5: Wprowadź wartość'))
+    .map(convertToNumber('Input5: Wprowadź poprawną liczbę'));
 
-const range = group({
+const range = FormModel.group({
         from: field4,
         to: field5
     })
     .map(acceptRange(10))
-    .map((value): Result<string> => new ResultValue(`${value.from}-${value.to}`))
+    .map((value): Result<string> => ({
+        type: 'ok',
+        value: `${value.from}-${value.to}`
+    }))
 ;
 
 type SelectType = 'a' | 'b' | 'c' | true;
 
-const select = input<SelectType>('c');
+const select = FormInputState.create<SelectType>('c');
 const selectModel = select.toModel();
 
-const flag = input<boolean>(false);
+const flag = FormInputState.create<boolean>(false);
 const flagModel = flag.toModel();
 
 
 const selectList = [
-    input<SelectType>('c', true),
-    input<SelectType>('a', true),
-    input<SelectType>(true, true),
-    input<SelectType>('a', true),
-    input<SelectType>(true, true)
+    FormInputState.create<SelectType>('c'),
+    FormInputState.create<SelectType>('a'),
+    FormInputState.create<SelectType>(true),
+    FormInputState.create<SelectType>('a'),
+    FormInputState.create<SelectType>(true)
 ];
 
-const selectListGroup = groupArray(selectList).map((value) => {
+const selectListGroup = FormModel.groupArray(selectList).map((value) => {
     let count = 0;
     for (const item of value) {
         if (item === true) {
@@ -96,15 +109,21 @@ const selectListGroup = groupArray(selectList).map((value) => {
     }
 
     if (count > 1) {
-        return new ResultValue(value);
+        return {
+            type: 'ok',
+            value
+        };        
     }
 
-    return new ResultError('Wybierz "true" przynajmniej dwa razy');
+    return {
+        type: 'error',
+        message: ['Wybierz "true" przynajmniej dwa razy']
+    };   
 });
 
 
 
-const formState = group({
+const formState = FormModel.group({
     data: date1,
     range: range,
     select: select,
@@ -196,7 +215,6 @@ export class App extends React.Component {
 
                 </GroupView>
 
-                {this.renderVisited()}
                 {this.renderValue()}
                 {this.renderSave()}
                 {this.renderReset()}
@@ -208,31 +226,38 @@ export class App extends React.Component {
         formState.setAsVisited();
     }
 
-    private renderVisited() {
-        const isVisited = formState.isVisited;
-        return (
-            <div>
-                isVisited: { isVisited ? 'true' : 'false'}
-            </div>
-        );
-    }
-
     private renderValue() {
         const result = formState.result;
+
+        if (result.type === 'error') {
+            return (
+                <div>
+                    error {'==>>>'} {JSON.stringify(result.message)}
+                </div>
+            );
+        }
+
+        if (result.type === 'loading') {
+            return (
+                <div>
+                    Loading ...
+                </div>
+            );
+        }
+
         return (
             <div>
-                result: {result instanceof ResultValue ? JSON.stringify(result.value) : '!!Error!!'}
+                result: {result.type === 'ok' ? JSON.stringify(result.value) : '!!Error!!'}
             </div>
         );
     }
 
     private renderSave() {
-        const isVisited = formState.isVisited;
         const result = formState.result;
 
         return (
             <div onClick={this.onSave}>
-                { isVisited === false || (result instanceof ResultValue) ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
+                { result.type === 'ok' ? 'Zapisz' : 'jeszcze nie możesz zapisać' }
             </div>
         );
     }

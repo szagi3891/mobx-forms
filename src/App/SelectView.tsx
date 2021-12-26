@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormInputState } from '../Form';
+import { FormInputState } from 'src/Form/FormInputState';
 import { observer } from 'mobx-react';
 
 export interface OptionType<T> {
@@ -32,7 +32,7 @@ class OptionItem<T> extends React.Component<OptionItemPropsType<T>> {
 }
 
 interface PropsType<T> {
-    state: FormInputState<T>,
+    state: FormInputState<T, unknown>,
     options: Array<OptionType<T>>
 }
 

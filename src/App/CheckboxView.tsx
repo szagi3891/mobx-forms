@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FormInputState } from '../Form';
+import { FormInputState } from 'src/Form/FormInputState';
 import { observer } from 'mobx-react';
 
 interface PropsType {
-    state: FormInputState<boolean>,
+    state: FormInputState<boolean, unknown>,
 }
 
 @observer

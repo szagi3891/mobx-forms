@@ -1,29 +1,42 @@
-import { input } from '../index';
-import { Result, ResultError, ResultValue } from '../../Form/type';
+import { FormInputState } from '../FormInputState';
+import { Result } from '../FormModel';
 
 const errorMessage = 'Przynajmnie dwa znaki wprowadz';
-const createError = () => new ResultError(errorMessage);
+const createError = (): Result<string> => ({
+    type: 'error',
+    message: [errorMessage]
+});
 
 describe('FormModel', () => {
     it('Visited', () => {
-        const input1 = input('');
-        const field1 = input1.map((value: string): Result<string> =>
-            value.length < 2 ? createError() : new ResultValue(value)
-        );
+        const input1 = FormInputState.create('');
+        const field1 = input1.map((value: string): Result<string> => {
+            if (value.length < 2) {
+                return createError();
+            }
+            
+            return ({
+                type: 'ok',
+                value
+            });
+        });
 
         expect(field1.result).toEqual(createError());
-        expect(field1.errorMessage).toEqual(null);
+        expect(field1.errors).toEqual(null);
 
         input1.setAsVisited();
         expect(field1.result).toEqual(createError());
-        expect(field1.errorMessage).toEqual(errorMessage);
+        expect(field1.errors).toEqual(errorMessage);
 
         input1.setValue('a');
         expect(field1.result).toEqual(createError());
-        expect(field1.errorMessage).toEqual(errorMessage);
+        expect(field1.errors).toEqual(errorMessage);
 
         input1.setValue('aa');
-        expect(field1.result).toEqual(new ResultValue('aa'));
-        expect(field1.errorMessage).toEqual(null);
+        expect(field1.result).toEqual({
+            type: 'ok',
+            value: 'aa'
+        });
+        expect(field1.errors).toEqual(null);
     });
 });
