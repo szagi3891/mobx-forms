@@ -39,7 +39,7 @@ describe('App', () => {
     });
 
     it('grupa', () => {
-        const input1 = FormInputState.create('');
+        const input1 = FormInputState.new('');
         const field1 = input1
             .map(convertToNumber('Input1: Not number'))
             .map((value): Result<number> => {
@@ -56,7 +56,7 @@ describe('App', () => {
                 }
             });
 
-        const input2 = FormInputState.create('');
+        const input2 = FormInputState.new('');
         const field2 = input2
             .map(convertToNumber('Input2: Not number'))
             .map((value): Result<number> => {

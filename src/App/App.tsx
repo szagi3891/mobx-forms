@@ -38,17 +38,17 @@ const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType
     };
 }
 
-const field1 = FormInputState.create('')
+const field1 = FormInputState.new('')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateDay);
 
-const field2 = FormInputState.create('')
+const field2 = FormInputState.new('')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateMonth);
 
-const field3 = FormInputState.create('')
+const field3 = FormInputState.new('')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateYear);
@@ -59,11 +59,11 @@ const date1 = FormModel.group({
     year: field3                                    //(message) => `Input3: ${message}`  TODO
 });
 
-const field4 = FormInputState.create('')
+const field4 = FormInputState.new('')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'));
 
-const field5 = FormInputState.create('')
+const field5 = FormInputState.new('')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'));
 
@@ -80,16 +80,16 @@ const range = FormModel.group({
 
 type SelectType = 'a' | 'b' | 'c' | true;
 
-const select = FormInputState.create<SelectType>('c');
+const select = FormInputState.new<SelectType>('c');
 
-const flag = FormInputState.create<boolean>(false);
+const flag = FormInputState.new<boolean>(false);
 
 const selectList = {
-    'a1': FormInputState.create<SelectType>('c'),
-    'a2': FormInputState.create<SelectType>('a'),
-    'a3': FormInputState.create<SelectType>(true),
-    'a4': FormInputState.create<SelectType>('a'),
-    'a5': FormInputState.create<SelectType>(true)
+    'a1': FormInputState.new<SelectType>('c'),
+    'a2': FormInputState.new<SelectType>('a'),
+    'a3': FormInputState.new<SelectType>(true),
+    'a4': FormInputState.new<SelectType>('a'),
+    'a5': FormInputState.new<SelectType>(true)
 };
 
 const selectListGroup = FormModel.group(selectList).map((value) => {

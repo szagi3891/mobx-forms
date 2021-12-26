@@ -9,7 +9,7 @@ const createError = (): Result<string> => ({
 
 describe('FormModel', () => {
     it('Visited', () => {
-        const input1 = FormInputState.create('');
+        const input1 = FormInputState.new('');
         const field1 = input1.map((value: string): Result<string> => {
             if (value.length < 2) {
                 return createError();
