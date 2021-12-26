@@ -1,21 +1,25 @@
 import * as React from 'react';
 import { FormInputState } from 'src/Form/FormInputState';
 import { observer } from 'mobx-react';
+import { GroupView } from './GroupView';
 
 interface InputViewPropsType {
+    label: string,
     input: FormInputState<string, unknown>,
 }
 
 @observer
 export class InputView extends React.Component<InputViewPropsType> {
     render() {
-        const { input } = this.props;
+        const { label, input } = this.props;
         return (
-            <input
-                value={input.value}
-                onChange={this.onChange}
-                onBlur={this.onBlur}
-            />
+            <GroupView label={label} group={input}>
+                <input
+                    value={input.value}
+                    onChange={this.onChange}
+                    onBlur={this.onBlur}
+                />
+            </GroupView>
         )
     }
 

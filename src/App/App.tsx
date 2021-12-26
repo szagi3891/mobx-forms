@@ -39,37 +39,37 @@ const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType
 }
 
 const field1 = FormInputState.create('')
-    .map(validateNotEmpty('Input1: Wprowadź wartość'))
-    .map(convertToNumber('Input1: Wprowadź poprawną liczbę'))
+    .map(validateNotEmpty('Wprowadź wartość'))
+    .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateDay);
 
 const field2 = FormInputState.create('')
-    .map(validateNotEmpty('Input2: Wprowadź wartość'))
-    .map(convertToNumber('Input2: Wprowadź poprawną liczbę'))
+    .map(validateNotEmpty('Wprowadź wartość'))
+    .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateMonth);
 
 const field3 = FormInputState.create('')
-    .map(validateNotEmpty('Input3: Wprowadź wartość'))
-    .map(convertToNumber('Input3: Wprowadź poprawną liczbę'))
+    .map(validateNotEmpty('Wprowadź wartość'))
+    .map(convertToNumber('Wprowadź poprawną liczbę'))
     .map(validateYear);
 
 const date1 = FormModel.group({
-    day: field1,
-    month: field2,
-    year: field3
+    day: field1,                                    //(message) => `Input1: ${message}`  TODO
+    month: field2,                                  //(message) => `Input2: ${message}`  TODO
+    year: field3                                    //(message) => `Input3: ${message}`  TODO
 });
 
 const field4 = FormInputState.create('')
-    .map(validateNotEmpty('Input4: Wprowadź wartość'))
-    .map(convertToNumber('Input4: Wprowadź poprawną liczbę'));
+    .map(validateNotEmpty('Wprowadź wartość'))
+    .map(convertToNumber('Wprowadź poprawną liczbę'));
 
 const field5 = FormInputState.create('')
-    .map(validateNotEmpty('Input5: Wprowadź wartość'))
-    .map(convertToNumber('Input5: Wprowadź poprawną liczbę'));
+    .map(validateNotEmpty('Wprowadź wartość'))
+    .map(convertToNumber('Wprowadź poprawną liczbę'));
 
 const range = FormModel.group({
-        from: field4,
-        to: field5
+        from: field4,                               //(message) => `Input4: ${message}`  TODO
+        to: field5                                  //(message) => `Input5: ${message}`  TODO
     })
     .map(acceptRange(10))
     .map((value): Result<string> => ({
@@ -84,21 +84,31 @@ const select = FormInputState.create<SelectType>('c');
 
 const flag = FormInputState.create<boolean>(false);
 
+const selectList = {
+    'a1': FormInputState.create<SelectType>('c'),
+    'a2': FormInputState.create<SelectType>('a'),
+    'a3': FormInputState.create<SelectType>(true),
+    'a4': FormInputState.create<SelectType>('a'),
+    'a5': FormInputState.create<SelectType>(true)
+};
 
-const selectList = [
-    FormInputState.create<SelectType>('c'),
-    FormInputState.create<SelectType>('a'),
-    FormInputState.create<SelectType>(true),
-    FormInputState.create<SelectType>('a'),
-    FormInputState.create<SelectType>(true)
-];
-
-const selectListGroup = FormModel.groupArray(selectList).map((value) => {
+const selectListGroup = FormModel.group(selectList).map((value) => {
     let count = 0;
-    for (const item of value) {
-        if (item === true) {
-            count++;
-        }
+
+    if (value.a1 === true) {
+        count++;
+    }
+    if (value.a2 === true) {
+        count++;
+    }
+    if (value.a3 === true) {
+        count++;
+    }
+    if (value.a4 === true) {
+        count++;
+    }
+    if (value.a5 === true) {
+        count++;
     }
 
     if (count > 1) {
@@ -145,28 +155,31 @@ export class App extends React.Component {
             <div>
                 <GroupView label="Zbiorczy model" group={formState}>
                     <GroupView label="Cała data" group={date1}>
-                        <GroupView label="Dzień" group={field1}>
-                            <InputView input={field1} />
-                        </GroupView>
-
-                        <GroupView label="Miesiąc" group={field2}>
-                            <InputView input={field2} />
-                        </GroupView>
-
-                        <GroupView label="Rok" group={field3}>
-                            <InputView input={field3} />
-                        </GroupView>
+                        <InputView
+                            label="Dzień"
+                            input={field1}
+                        />
+                        <InputView
+                            label="Miesiąc"
+                            input={field2}
+                        />
+                        <InputView
+                            label="Rok"
+                            input={field3}
+                        />
                     </GroupView>
 
 
                     <GroupView label="Zakres (max 10 różnicy)" group={range}>
-                        <GroupView label="Od" group={field4}>
-                            <InputView input={field4} />
-                        </GroupView>
+                        <InputView
+                            label="Od"
+                            input={field4}
+                        />
 
-                        <GroupView label="Do" group={field5}>
-                            <InputView input={field5} />
-                        </GroupView>
+                        <InputView
+                            label="Do"
+                            input={field5}
+                        />
                     </GroupView>
 
 
@@ -201,9 +214,11 @@ export class App extends React.Component {
                     </GroupView>
 
                     <GroupView label="selectListGrpup" group={selectListGroup}>
-                        { selectList.map((select, index) =>
-                            <SelectView key={index} state={select} options={options} />
-                        )}
+                        <SelectView state={selectList.a1} options={options} />
+                        <SelectView state={selectList.a2} options={options} />
+                        <SelectView state={selectList.a3} options={options} />
+                        <SelectView state={selectList.a4} options={options} />
+                        <SelectView state={selectList.a5} options={options} />
                     </GroupView>
 
                 </GroupView>

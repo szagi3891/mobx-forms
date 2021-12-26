@@ -96,7 +96,6 @@ export class FormModel<V> implements FormModelType<V> {
         if (result.type === 'error') {
             return result.message;
         }
-                                                                            //TODO - obserwowanie errors, ma powodować e z result są wycinane te errory
         return [];
     }
 
@@ -136,29 +135,6 @@ export class FormModel<V> implements FormModelType<V> {
                         modelOut[key] = innerValue;
                     } else {
                         return getErrors(fieldsValules);
-                    }
-                }
-
-                return {
-                    type: 'ok',
-                    value: modelOut
-                };
-            }
-        );
-    };
-
-    public static groupArray = <C>(fields: Array<FormModelType<C>>): FormModel<Array<C>> => {
-        return new FormModel(
-            fields,
-            (): Result<Array<C>> => {
-                const modelOut: Array<C> = [];
-            
-                for (const item of fields) {
-                    const value = item.result;
-                    if (value.type === 'ok') {
-                        modelOut.push(value.value);
-                    } else {
-                        return getErrors(fields);
                     }
                 }
 
