@@ -89,12 +89,26 @@ export class FormInputState<K, M> implements FormModelType<M> {
     }
 
     //implements FormModelType
-    public get errors(): Array<string> {
-        return this.model.errors;
+    public get result(): Result<M> {
+        const result = this.model.result;
+
+        if (result.type === 'error' && this.box.isVisited() == false) {
+            return {
+                type: 'error',
+                message: []
+            };
+        }
+
+        return result;
     }
 
-    public get result(): Result<M> {
-        return this.model.result;
+    @computed public get errors(): Array<string> {
+        const result = this.result;
+
+        if (result.type === 'error') {
+            return result.message;
+        }
+        return [];
     }
 
     @action public setAsVisited(): void {
