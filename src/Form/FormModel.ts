@@ -1,4 +1,4 @@
-import { computed, action } from "mobx";
+import { computed, action } from 'mobx';
 
 export type Result<T> = {
     type: 'ok',
@@ -10,8 +10,7 @@ export type Result<T> = {
     message: Array<string>,
 };
 
-
-export interface Value {
+interface ChildType {
     setAsVisited: () => void,
     reset: () => void,
 }
@@ -22,7 +21,6 @@ export interface FormModelType<V> {
     setAsVisited: () => void,
     reset: () => void,
 }
-
 
 type FormRecordBox = Record<string, FormModelType<unknown>>;
 
@@ -37,7 +35,7 @@ const hasLoading = (items: Array<FormModelType<unknown>>): boolean => {
     for (const item of items) {
         const value = item.result;
         if (value.type === 'loading') {
-            return true
+            return true;
         }
     }
 
@@ -63,18 +61,15 @@ const getErrors = <R>(items: Array<FormModelType<unknown>>): Result<R> => {
     return {
         type: 'error',
         message
-    }
+    };
 };
 
 
 export class FormModel<V> implements FormModelType<V> {
-
-    //TODO - tutaj dodać zmienną obserwowalną, którą będzie przestawiało obserwowanie na komunikaty błędów
-
-    private child: Array<Value>;
+    private child: Array<ChildType>;
     private getValue: () => Result<V>
 
-    constructor(child: Array<Value>, getValue: () => Result<V>) {
+    public constructor(child: Array<ChildType>, getValue: () => Result<V>) {
         this.child = child;
         this.getValue = getValue;
     }
@@ -103,13 +98,13 @@ export class FormModel<V> implements FormModelType<V> {
         return this.getValue();
     }
 
-    @action public setAsVisited() {
+    @action public setAsVisited(): void {
         for (const child of this.child) {
             child.setAsVisited();
         }
     }
 
-    @action public reset() {
+    @action public reset(): void {
         for (const child of this.child) {
             child.reset();
         }
@@ -124,14 +119,14 @@ export class FormModel<V> implements FormModelType<V> {
         return new FormModel(
             fieldsValules,
             (): Result<Model<IN>> => {
-                //@ts-ignore
+                //@ts-expect-error
                 const modelOut: Model<IN> = {};
         
                 for (const [key, item] of Object.entries(fields)) {
                     const value = item.result;
                     if (value.type === 'ok') {
                         const innerValue = value.value;
-                        //@ts-ignore
+                        //@ts-expect-error
                         modelOut[key] = innerValue;
                     } else {
                         return getErrors(fieldsValules);

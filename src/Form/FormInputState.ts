@@ -1,22 +1,34 @@
-import { observable, computed, action } from "mobx";
-import { FormModel, FormModelType, Result } from "./FormModel";
+import { observable, computed, action } from 'mobx';
+import { FormModel, FormModelType, Result } from './FormModel';
 
 class BoxValue<K> {
     private readonly initValue: K;
-    @observable value: K;
-    @observable visited: boolean;
+    @observable private value: K;
+    @observable private visited: boolean;
 
-    constructor(value: K) {
+    public constructor(value: K) {
         this.initValue = value;
         this.value = value;
         this.visited = false;
     }
 
-    @action setAsVisited() {
+    public setValue(value: K): void {
+        this.value = value;
+    }
+
+    public getValue(): K {
+        return this.value;
+    }
+
+    @action public setAsVisited(): void {
         this.visited = true;
     }
 
-    @action reset() {
+    @action public isVisited(): boolean {
+        return this.visited;
+    }
+
+    @action public reset(): void {
         this.value = this.initValue;
         this.visited = false;
     }
@@ -36,38 +48,38 @@ export class FormInputState<K, M> implements FormModelType<M> {
         const model = new FormModel([box], (): Result<K> => {
             return {
                 type: 'ok',
-                value: box.value
+                value: box.getValue()
             };
         });
 
         return new FormInputState(box, model);
     }
 
-    @action public setValue(value: K) {
-        this.box.value = value;
+    @action public setValue(value: K): void {
+        this.box.setValue(value);
     }
 
     @computed public get value(): K {
-        return this.box.value;
+        return this.box.getValue();
     }
 
     public get isVisited(): boolean {
-        return this.box.visited;
+        return this.box.isVisited();
     }
 
     /**
      * @deprecated
      */
-     public toModel(): FormModel<M> {
+    public toModel(): FormModel<M> {
         return this.model;
     }
 
-    public map<M2>(conv: (value: M) => Result<M2>): FormInputState<K, M2> {
+    public map<M2>(convert: (value: M) => Result<M2>): FormInputState<K, M2> {
         const model2 = new FormModel([this.box], (): Result<M2> => {
             const current = this.model.result;
 
             if (current.type === 'ok') {
-                return conv(current.value);
+                return convert(current.value);
             }
 
             return current;
@@ -77,7 +89,6 @@ export class FormInputState<K, M> implements FormModelType<M> {
     }
 
     //implements FormModelType
-
     public get errors(): Array<string> {
         return this.model.errors;
     }
@@ -86,11 +97,11 @@ export class FormInputState<K, M> implements FormModelType<M> {
         return this.model.result;
     }
 
-    @action public setAsVisited() {
+    @action public setAsVisited(): void {
         this.model.setAsVisited();
     }
 
-    @action public reset() {
-        this.model.reset;
+    @action public reset(): void {
+        this.model.reset();
     }
 }
