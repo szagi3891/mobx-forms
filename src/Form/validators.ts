@@ -1,44 +1,14 @@
-import { Result } from "./FormModel";
+import { createResultError, createResultOk, Result } from "./FormModel";
 
 export const convertToNumber = (message: string) => (value: string): Result<number> => {
     const valueNumber = parseFloat(value);
-    if (isNaN(valueNumber)) {
-        return {
-            type: 'error',
-            message: [message]
-        };
-    }
-    
-    return {
-        type: 'ok',
-        value: valueNumber
-    };
+    return isNaN(valueNumber) ? createResultError(message) : createResultOk(valueNumber);
 }
 
-export const validateNotEmpty = (message: string) => (value: string): Result<string> => {
-    if (value === '') {
-        return {
-            type: 'error',
-            message: [message]
-        };
-    }
+export const validateNotEmpty = (message: string) => (value: string): Result<string> =>
+    value === '' ? createResultError(message) : createResultOk(value)
+;
 
-    return {
-        type: 'ok',
-        value: value
-    };
-};
-
-export const validateRange = (from: number, to: number, message: string) => (value: number): Result<number> => {
-    if (from <= value && value <= to) {
-        return {
-            type: 'ok',
-            value: value
-        };
-    }
-
-    return {
-        type: 'error',
-        message: [message]
-    };
-};
+export const validateRange = (from: number, to: number, message: string) => (value: number): Result<number> =>
+    from <= value && value <= to ? createResultOk(value) : createResultError(message)
+;

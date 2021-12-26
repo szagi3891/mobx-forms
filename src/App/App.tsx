@@ -8,7 +8,7 @@ import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
 import styled from '@emotion/styled';
 import { FormInputState } from '../Form/FormInputState';
-import { FormModel, Result } from '../Form/FormModel';
+import { createResultError, createResultOk, FormModel, Result } from '../Form/FormModel';
 
 const Label = styled('label')`
     cursor: pointer;
@@ -26,16 +26,10 @@ interface FromToType {
 const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType> => {
     const delta = Math.abs(value.to - value.from);
     if (delta > maxDelta) {
-        return {
-            type: 'error',
-            message: ['Zbyt dua odległośc pomiędzy oboma liczbami']
-        };
+        return createResultError('Zbyt dua odległośc pomiędzy oboma liczbami');
     }
     
-    return {
-        type: 'ok',
-        value
-    };
+    return createResultOk(value);
 }
 
 const field1 = FormInputState.new('')
@@ -72,10 +66,7 @@ const range = FormModel.group({
         to: field5                                  //(message) => `Input5: ${message}`  TODO
     })
     .map(acceptRange(10))
-    .map((value): Result<string> => ({
-        type: 'ok',
-        value: `${value.from}-${value.to}`
-    }))
+    .map((value): Result<string> => createResultOk(`${value.from}-${value.to}`))
 ;
 
 type SelectType = 'a' | 'b' | 'c' | true;
@@ -112,16 +103,10 @@ const selectListGroup = FormModel.group(selectList).map((value) => {
     }
 
     if (count > 1) {
-        return {
-            type: 'ok',
-            value
-        };        
+        return createResultOk(value);
     }
 
-    return {
-        type: 'error',
-        message: ['Wybierz "true" przynajmniej dwa razy']
-    };   
+    return createResultError('Wybierz "true" przynajmniej dwa razy');
 });
 
 

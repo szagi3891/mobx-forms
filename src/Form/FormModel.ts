@@ -10,6 +10,19 @@ export type Result<T> = {
     message: Array<string>,
 };
 
+export const createResultOk = <T>(value: T): Result<T> => ({
+    type: 'ok',
+    value: value
+});
+
+export const createResultLoading = <T>(): Result<T> => ({
+    type: 'loading',
+});
+
+export const createResultError = <T>(message: string): Result<T> => ({
+    type: 'error',
+    message: [message]
+});
 interface ChildType {
     setAsVisited: () => void,
     reset: () => void,
