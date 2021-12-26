@@ -153,5 +153,20 @@ export class FormModel<V> implements FormModelType<V> {
             }
         );
     };
+
+    public muteErrors(): FormModel<V> {
+        return new FormModel([this], (): Result<V> => {
+            const result = this.result;
+
+            if (result.type === 'error') {
+                return {
+                    type: 'error',
+                    message: [],
+                };
+            }
+
+            return result;
+        });
+    }
 }
 
