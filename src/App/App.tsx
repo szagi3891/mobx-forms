@@ -38,20 +38,17 @@ const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType
     };
 }
 
-const input1 = FormInputState.create('');
-const field1 = input1
+const field1 = FormInputState.create('')
     .map(validateNotEmpty('Input1: Wprowadź wartość'))
     .map(convertToNumber('Input1: Wprowadź poprawną liczbę'))
     .map(validateDay);
 
-const input2 = FormInputState.create('');
-const field2 = input2
+const field2 = FormInputState.create('')
     .map(validateNotEmpty('Input2: Wprowadź wartość'))
     .map(convertToNumber('Input2: Wprowadź poprawną liczbę'))
     .map(validateMonth);
 
-const input3 = FormInputState.create('');
-const field3 = input3
+const field3 = FormInputState.create('')
     .map(validateNotEmpty('Input3: Wprowadź wartość'))
     .map(convertToNumber('Input3: Wprowadź poprawną liczbę'))
     .map(validateYear);
@@ -62,13 +59,11 @@ const date1 = FormModel.group({
     year: field3
 });
 
-const input4 = FormInputState.create('');
-const field4 = input4
+const field4 = FormInputState.create('')
     .map(validateNotEmpty('Input4: Wprowadź wartość'))
     .map(convertToNumber('Input4: Wprowadź poprawną liczbę'));
 
-const input5 = FormInputState.create('');
-const field5 = input5
+const field5 = FormInputState.create('')
     .map(validateNotEmpty('Input5: Wprowadź wartość'))
     .map(convertToNumber('Input5: Wprowadź poprawną liczbę'));
 
@@ -86,10 +81,8 @@ const range = FormModel.group({
 type SelectType = 'a' | 'b' | 'c' | true;
 
 const select = FormInputState.create<SelectType>('c');
-const selectModel = select.toModel();
 
 const flag = FormInputState.create<boolean>(false);
-const flagModel = flag.toModel();
 
 
 const selectList = [
@@ -153,36 +146,36 @@ export class App extends React.Component {
                 <GroupView label="Zbiorczy model" group={formState}>
                     <GroupView label="Cała data" group={date1}>
                         <GroupView label="Dzień" group={field1}>
-                            <InputView input={input1} />
+                            <InputView input={field1} />
                         </GroupView>
 
                         <GroupView label="Miesiąc" group={field2}>
-                            <InputView input={input2} />
+                            <InputView input={field2} />
                         </GroupView>
 
                         <GroupView label="Rok" group={field3}>
-                            <InputView input={input3} />
+                            <InputView input={field3} />
                         </GroupView>
                     </GroupView>
 
 
                     <GroupView label="Zakres (max 10 różnicy)" group={range}>
                         <GroupView label="Od" group={field4}>
-                            <InputView input={input4} />
+                            <InputView input={field4} />
                         </GroupView>
 
                         <GroupView label="Do" group={field5}>
-                            <InputView input={input5} />
+                            <InputView input={field5} />
                         </GroupView>
                     </GroupView>
 
 
-                    <GroupView label="Checkbox" group={flagModel}>
+                    <GroupView label="Checkbox" group={flag}>
                         <CheckboxView state={flag} />
                     </GroupView>
                     
                     
-                    <GroupView label="RadioBox" group={selectModel}>
+                    <GroupView label="RadioBox" group={select}>
                         <Label>
                             <RadioBoxView state={select} value="a" /> a                        
                         </Label>
