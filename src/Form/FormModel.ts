@@ -1,29 +1,79 @@
 import { computed, action } from 'mobx';
 
-export type Result<T> = {
+type ResultType<T> = {
     type: 'ok',
-    value: T
-} | {
-    type: 'loading',
+    data: T
 } | {
     type: 'error',
-    message: Array<string>,
+    message: 'loading' | Array<string>,
 };
 
-export const createResultOk = <T>(value: T): Result<T> => ({
-    type: 'ok',
-    value: value
-});
+export class Result<T> {
+    readonly value: ResultType<T>;
 
-export const createResultLoading = <T>(): Result<T> => ({
-    type: 'loading',
-});
+    constructor(value: ResultType<T>) {
+        this.value = value;
+    }
 
-export const createResultError = <T>(message: string): Result<T> => ({
-    type: 'error',
-    message: [message]
-});
+    public static createLoading = <K>(): Result<K> => new Result({
+        type: 'error',
+        message: 'loading',
+    });
+
+    public static createError<K>(value: string): Result<K> {
+        return new Result({
+            type: 'error',
+            message: [value]
+        });
+    }
+
+    public static createErrorList<K>(message: Array<string>): Result<K> {
+        return new Result({
+            type: 'error',
+            message
+        });
+    }
+
+    static createOk = <K>(data: K) => new Result({
+        type: 'ok',
+        data
+    });
+
+    public map<K>(convert: (value: T) => Result<K>): Result<K> {
+        if (this.value.type === 'ok') {
+            return convert(this.value.data);
+        }
+
+        return new Result(this.value);
+    }
+
+    public errors(): Array<string> {
+        if (this.value.type === 'error') {
+            const message = this.value.message;
+            return message === 'loading' ? [] : message;
+        }
+
+        return [];
+    }
+
+    public muteErrors(): Result<T> {
+        if (this.value.type === 'error') {
+            const message = this.value.message;
+
+            if (message === 'loading') {
+                return Result.createLoading();
+            }
+
+            return Result.createErrorList([]);
+        }
+
+        return this;
+    }
+}
+
+
 interface ChildType {
+    isVisited: () => boolean,
     setAsVisited: () => void,
     reset: () => void,
 }
@@ -32,6 +82,7 @@ export interface FormModelType<V> {
     get errors(): Array<string>;
     get result(): Result<V>;
     setAsVisited: () => void,
+    isVisited: () => boolean,
     reset: () => void,
 }
 
@@ -44,37 +95,26 @@ type Model<T extends FormRecordBox> = {
             : never;
 }
 
-const hasLoading = (items: Array<FormModelType<unknown>>): boolean => {
-    for (const item of items) {
-        const value = item.result;
-        if (value.type === 'loading') {
-            return true;
-        }
-    }
-
-    return false;
-};
-
 const getErrors = <R>(items: Array<FormModelType<unknown>>): Result<R> => {
-    if (hasLoading(items)) {
-        return {
-            type: 'loading'
-        };
-    }
-
     const errors: Array<Array<string>> = [];
 
     for (const item of items) {
-        errors.push(item.errors);
+        const result = item.result;
+
+        if (result.value.type === 'error') {
+            const message = result.value.message;
+            if (message === 'loading') {
+                return Result.createLoading();
+            }
+
+            errors.push(message);
+        }
     }
 
     const empty: Array<string> = [];
     const message: Array<string> = empty.concat(...errors);
 
-    return {
-        type: 'error',
-        message
-    };
+    return Result.createErrorList(message);
 };
 
 
@@ -88,33 +128,37 @@ export class FormModel<V> implements FormModelType<V> {
     }
 
     public map<C>(conv: (value: V) => Result<C>): FormModel<C> {
-        return new FormModel([this], (): Result<C> => {
-            const valueModel = this.getValue();
-            if (valueModel.type === 'ok') {
-                return conv(valueModel.value);
-            }
-
-            return valueModel;
-        });
-    }
-
-    @computed public get errors(): Array<string> {
-        const result = this.result;
-
-        if (result.type === 'error') {
-            return result.message;
-        }
-        return [];
+        return new FormModel([this], (): Result<C> => this.getValue().map(conv));
     }
 
     @computed public get result(): Result<V> {
-        return this.getValue();
+        const result = this.getValue();
+
+        if (this.isVisited()) {
+            return result;
+        }
+
+        return result.muteErrors();
+    }
+
+    @computed public get errors(): Array<string> {
+        return this.result.errors();
     }
 
     @action public setAsVisited(): void {
         for (const child of this.child) {
             child.setAsVisited();
         }
+    }
+
+    public isVisited(): boolean {
+        for (const item of this.child) {
+            if (item.isVisited() === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @action public reset(): void {
@@ -125,6 +169,7 @@ export class FormModel<V> implements FormModelType<V> {
 
     public static group = <IN extends FormRecordBox>(fields: IN): FormModel<Model<IN>> => {
         const fieldsValules: Array<FormModelType<unknown>> = [];
+
         for (const item of Object.values(fields)) {
             fieldsValules.push(item);
         }
@@ -136,9 +181,9 @@ export class FormModel<V> implements FormModelType<V> {
                 const modelOut: Model<IN> = {};
         
                 for (const [key, item] of Object.entries(fields)) {
-                    const value = item.result;
-                    if (value.type === 'ok') {
-                        const innerValue = value.value;
+                    const result = item.result;
+                    if (result.value.type === 'ok') {
+                        const innerValue = result.value.data;
                         //@ts-expect-error
                         modelOut[key] = innerValue;
                     } else {
@@ -146,27 +191,13 @@ export class FormModel<V> implements FormModelType<V> {
                     }
                 }
 
-                return {
-                    type: 'ok',
-                    value: modelOut
-                };
+                return Result.createOk(modelOut);
             }
         );
     };
 
     public muteErrors(): FormModel<V> {
-        return new FormModel([this], (): Result<V> => {
-            const result = this.result;
-
-            if (result.type === 'error') {
-                return {
-                    type: 'error',
-                    message: [],
-                };
-            }
-
-            return result;
-        });
+        return new FormModel([this], (): Result<V> => this.result.muteErrors());
     }
 }
 

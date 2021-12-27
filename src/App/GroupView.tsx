@@ -43,7 +43,7 @@ export class GroupView<T> extends React.Component<GroupViewPropsType<T>> {
     hasError(): boolean {
         const { group } = this.props;
         const error = group.errors;
-        return error !== null;
+        return error.length > 0;
     }
 
     renderError() {
@@ -61,12 +61,12 @@ export class GroupView<T> extends React.Component<GroupViewPropsType<T>> {
     }
 
     renderValue() {
-        const valueModel = this.props.group.result;
+        const valueModel = this.props.group.result.value;
 
         if (valueModel.type === 'ok') {
             return (
                 <pre>
-                    { JSON.stringify(valueModel.value) }
+                    { JSON.stringify(valueModel.data) }
                 </pre>
             );
         }

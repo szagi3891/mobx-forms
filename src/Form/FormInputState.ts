@@ -3,7 +3,7 @@ import { FormModel, FormModelType, Result } from './FormModel';
 
 class BoxValue<K> {
     private readonly initValue: K;
-    @observable private value: K;
+    @observable public value: K;
     @observable private visited: boolean;
 
     public constructor(value: K) {
@@ -12,19 +12,11 @@ class BoxValue<K> {
         this.visited = false;
     }
 
-    public setValue(value: K): void {
-        this.value = value;
-    }
-
-    public getValue(): K {
-        return this.value;
-    }
-
     @action public setAsVisited(): void {
         this.visited = true;
     }
 
-    @action public isVisited(): boolean {
+    public isVisited(): boolean {
         return this.visited;
     }
 
@@ -45,25 +37,23 @@ export class FormInputState<K, M> implements FormModelType<M> {
 
     public static new<K>(value: K): FormInputState<K, K> {
         const box = new BoxValue(value);
-        const model = new FormModel([box], (): Result<K> => {
-            return {
-                type: 'ok',
-                value: box.getValue()
-            };
-        });
+        const model = new FormModel(
+            [box],
+            (): Result<K> => Result.createOk(box.value)
+        );
 
         return new FormInputState(box, model);
     }
 
     @action public setValue(value: K): void {
-        this.box.setValue(value);
+        this.box.value = value;
     }
 
     @computed public get value(): K {
-        return this.box.getValue();
+        return this.box.value;
     }
 
-    public get isVisited(): boolean {
+    public isVisited(): boolean {
         return this.box.isVisited();
     }
 
@@ -75,15 +65,10 @@ export class FormInputState<K, M> implements FormModelType<M> {
     }
 
     public map<M2>(convert: (value: M) => Result<M2>): FormInputState<K, M2> {
-        const model2 = new FormModel([this.box], (): Result<M2> => {
-            const current = this.model.result;
-
-            if (current.type === 'ok') {
-                return convert(current.value);
-            }
-
-            return current;
-        });
+        const model2 = new FormModel(
+            [this.box],
+            (): Result<M2> => this.model.result.map(convert)
+        );
 
         return new FormInputState(this.box, model2);
     }
@@ -92,23 +77,15 @@ export class FormInputState<K, M> implements FormModelType<M> {
     public get result(): Result<M> {
         const result = this.model.result;
 
-        if (result.type === 'error' && this.box.isVisited() == false) {
-            return {
-                type: 'error',
-                message: []
-            };
+        if (this.box.isVisited()) {
+            return result;
         }
 
-        return result;
+        return result.muteErrors();
     }
 
     @computed public get errors(): Array<string> {
-        const result = this.result;
-
-        if (result.type === 'error') {
-            return result.message;
-        }
-        return [];
+        return this.result.errors();
     }
 
     @action public setAsVisited(): void {

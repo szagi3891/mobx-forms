@@ -8,7 +8,7 @@ import { CheckboxView } from './CheckboxView';
 import { RadioBoxView } from './RadioBoxView';
 import styled from '@emotion/styled';
 import { FormInputState } from '../Form/FormInputState';
-import { createResultError, createResultOk, FormModel, Result } from '../Form/FormModel';
+import { FormModel, Result } from '../Form/FormModel';
 
 const Label = styled('label')`
     cursor: pointer;
@@ -26,10 +26,10 @@ interface FromToType {
 const acceptRange = (maxDelta: number) => (value: FromToType): Result<FromToType> => {
     const delta = Math.abs(value.to - value.from);
     if (delta > maxDelta) {
-        return createResultError('Zbyt dua odległośc pomiędzy oboma liczbami');
+        return Result.createError('Zbyt dua odległośc pomiędzy oboma liczbami');
     }
     
-    return createResultOk(value);
+    return Result.createOk(value);
 }
 
 const field1 = FormInputState.new('')
@@ -53,11 +53,11 @@ const date1 = FormModel.group({
     year: field3                                    //(message) => `Input3: ${message}`  TODO
 });
 
-const field4 = FormInputState.new('')
+const field4 = FormInputState.new('10')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'));
 
-const field5 = FormInputState.new('')
+const field5 = FormInputState.new('40')
     .map(validateNotEmpty('Wprowadź wartość'))
     .map(convertToNumber('Wprowadź poprawną liczbę'));
 
@@ -66,7 +66,7 @@ const range = FormModel.group({
         to: field5                                  //(message) => `Input5: ${message}`  TODO
     })
     .map(acceptRange(10))
-    .map((value): Result<string> => createResultOk(`${value.from}-${value.to}`))
+    .map((value): Result<string> => Result.createOk(`${value.from}-${value.to}`))
 ;
 
 type SelectType = 'a' | 'b' | 'c' | true;
@@ -103,10 +103,10 @@ const selectListGroup = FormModel.group(selectList).map((value) => {
     }
 
     if (count > 1) {
-        return createResultOk(value);
+        return Result.createOk(value);
     }
 
-    return createResultError('Wybierz "true" przynajmniej dwa razy');
+    return Result.createError('Wybierz "true" przynajmniej dwa razy');
 });
 
 
@@ -220,7 +220,7 @@ export class App extends React.Component {
     }
 
     private renderValue() {
-        const result = formState.result;
+        const result = formState.result.value;
 
         if (result.type === 'error') {
             return (
@@ -230,23 +230,15 @@ export class App extends React.Component {
             );
         }
 
-        if (result.type === 'loading') {
-            return (
-                <div>
-                    Loading ...
-                </div>
-            );
-        }
-
         return (
             <div>
-                result: {result.type === 'ok' ? JSON.stringify(result.value) : '!!Error!!'}
+                result: {JSON.stringify(result.data)}
             </div>
         );
     }
 
     private renderSave() {
-        const result = formState.result;
+        const result = formState.result.value;
 
         return (
             <div onClick={this.onSave}>
